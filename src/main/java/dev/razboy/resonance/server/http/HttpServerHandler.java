@@ -1,5 +1,6 @@
 package dev.razboy.resonance.server.http;
 
+import com.google.common.io.Files;
 import dev.razboy.resonance.server.file.FileUtil;
 import dev.razboy.resonance.server.websocket.WebSocketHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,7 +37,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                         HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE
                 );
             }
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, FileUtil.getMime(msg.uri()));
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, responseMessage.length());
             ctx.writeAndFlush(response);
 

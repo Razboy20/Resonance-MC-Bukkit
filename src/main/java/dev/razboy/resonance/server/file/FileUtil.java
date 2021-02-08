@@ -76,8 +76,7 @@ public class FileUtil {
             return readFile(get404());
         return readFile(file);
     }
-    /**
-     * In dev
+
     public static String getMime(String request) {
         if (request.endsWith("/")) {request += "index.html";}
         Path file = getFolder().resolve(request.substring(1));
@@ -87,8 +86,7 @@ public class FileUtil {
         if (!Files.exists(file)) {
             return getMime(get404().toFile().getName());
         }
-        switch (file.)
-
+        System.out.println(com.google.common.io.Files.getFileExtension(file.toFile().getName()));
+        return "text/html";
     }
-     */
 }
