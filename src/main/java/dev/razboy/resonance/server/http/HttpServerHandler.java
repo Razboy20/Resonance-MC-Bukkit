@@ -1,5 +1,6 @@
 package dev.razboy.resonance.server.http;
 
+import dev.razboy.resonance.server.file.FileUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
@@ -27,14 +28,14 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 //                ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
                 handleHandshake(ctx, msg);
             }
-            String responseMessage = "<bold>BOLD<bold> test";
+            String responseMessage = String.join("\n", FileUtil.getWebsitePage(msg.uri()));
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, copiedBuffer(responseMessage.getBytes(StandardCharsets.UTF_8)));
             if (HttpUtil.isKeepAlive(msg)) {
                 response.headers().set(
                         HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE
                 );
             }
-            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain");
+            response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
             response.headers().set(HttpHeaderNames.CONTENT_LENGTH, responseMessage.length());
             ctx.writeAndFlush(response);
 

@@ -1,4 +1,4 @@
-main: dev.razboy.resonance.Main
+main: dev.razboy.resonance.Resonance
 name: Resonance
 version: 1.0.0
 api-version: 1.16
