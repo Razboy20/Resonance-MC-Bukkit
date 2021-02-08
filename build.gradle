@@ -3,7 +3,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-group 'net.thiccaxe.wa'
+group 'dev.razboy.resonance'
 version '1.0-SNAPSHOT'
 targetCompatibility = '11'
 sourceCompatibility = '11'

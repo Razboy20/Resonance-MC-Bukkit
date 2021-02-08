@@ -1,4 +1,4 @@
-package net.thiccaxe.wa.server.http;
+package dev.razboy.resonance.server.http;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

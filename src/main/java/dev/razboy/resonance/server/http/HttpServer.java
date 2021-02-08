@@ -1,4 +1,4 @@
-package net.thiccaxe.wa.server.http;
+package dev.razboy.resonance.server.http;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;

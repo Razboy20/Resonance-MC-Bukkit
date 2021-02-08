@@ -1,4 +1,4 @@
-package net.thiccaxe.wa.server.websocket;
+package dev.razboy.resonance.server.websocket;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

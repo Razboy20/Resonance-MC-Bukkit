@@ -1,4 +1,4 @@
-package net.thiccaxe.wa.server.http;
+package dev.razboy.resonance.server.http;
 
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
