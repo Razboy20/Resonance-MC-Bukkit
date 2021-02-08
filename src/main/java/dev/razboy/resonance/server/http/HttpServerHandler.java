@@ -1,6 +1,7 @@
 package dev.razboy.resonance.server.http;
 
 import dev.razboy.resonance.server.file.FileUtil;
+import dev.razboy.resonance.server.websocket.WebSocketHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.*;
@@ -25,7 +26,7 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
                             headers.get(HttpHeaderNames.UPGRADE).equalsIgnoreCase("websocket")
             ) {
 //                System.out.println("WS request");
-//                ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
+                ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
                 handleHandshake(ctx, msg);
             }
             String responseMessage = String.join("\n", FileUtil.getWebsitePage(msg.uri()));

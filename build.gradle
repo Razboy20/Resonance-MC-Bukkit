@@ -19,3 +19,9 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'io.netty:netty-all:4.1.56.Final'
 }
+
+task deploy (dependsOn: build, type: Copy) {
+    from "build/libs"
+    into "src/test/server/plugins"
+    include "*.jar"
+}
