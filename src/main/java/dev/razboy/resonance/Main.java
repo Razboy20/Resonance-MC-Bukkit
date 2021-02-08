@@ -1,6 +1,6 @@
 package dev.razboy.resonance;
 
-import net.thiccaxe.wa.server.http.HttpServer;
+import dev.razboy.resonance.server.http.HttpServer;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

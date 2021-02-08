@@ -1,13 +1,11 @@
 package dev.razboy.resonance.server.websocket;
 
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.websocketx.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 public class WebSocketHandler extends ChannelInboundHandlerAdapter {
