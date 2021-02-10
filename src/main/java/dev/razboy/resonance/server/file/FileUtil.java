@@ -18,7 +18,6 @@ import java.util.List;
 public class FileUtil {
     private static final Path FOLDER = Resonance.websiteFolder;
 
-
     public static Path createFile(Path file) {
         if (!Files.exists(file)) {
             try {
@@ -64,29 +63,10 @@ public class FileUtil {
         return createFile(getFolder().resolve("404.html"));
     }
     public static List<String> getWebsitePage(String request) throws IOException {
-        if (request.endsWith("/")) // ends with folder directory
-            request += "index.html";
-        //System.out.println(request);
-        Path file = getFolder().resolve(request.substring(1));
-        //System.out.println("1" + getFolder().toFile().getAbsolutePath());
-        //System.out.println("2" + file.toFile().getAbsolutePath());
-        if (Files.exists(file) && Files.isDirectory(file))
-            return getWebsitePage(request + "/index.html");
-        if (!Files.exists(file))
-            return readFile(get404());
-        return readFile(file);
+        return readFile(getHome());
     }
 
     public static String getMime(String request) {
-        if (request.endsWith("/")) {request += "index.html";}
-        Path file = getFolder().resolve(request.substring(1));
-        if (Files.exists(file) && Files.isDirectory(file)) {
-            return getMime(request + "/index.html");
-        }
-        if (!Files.exists(file)) {
-            return getMime(get404().toFile().getName());
-        }
-        System.out.println(com.google.common.io.Files.getFileExtension(file.toFile().getName()));
         return "text/html";
     }
 }

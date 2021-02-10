@@ -22,14 +22,16 @@ public class HttpServerHandler extends ChannelInboundHandlerAdapter {
 //            System.out.println("Http Request Received");
 
             HttpHeaders headers = msg.headers();
-            if (
-                    headers.get(HttpHeaderNames.CONNECTION).equalsIgnoreCase(String.valueOf(HttpHeaderValues.UPGRADE)) &&
-                            headers.get(HttpHeaderNames.UPGRADE).equalsIgnoreCase("websocket")
-            ) {
+            try {
+                if (
+                        headers.get(HttpHeaderNames.CONNECTION).equalsIgnoreCase(String.valueOf(HttpHeaderValues.UPGRADE)) &&
+                                headers.get(HttpHeaderNames.UPGRADE).equalsIgnoreCase("websocket")
+                ) {
 //                System.out.println("WS request");
-                ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
-                handleHandshake(ctx, msg);
-            }
+                    ctx.pipeline().replace(this, "websocketHandler", new WebSocketHandler());
+                    handleHandshake(ctx, msg);
+                }
+            } catch (Exception ignored) {}
             String responseMessage = String.join("\n", FileUtil.getWebsitePage(msg.uri()));
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, copiedBuffer(responseMessage.getBytes(StandardCharsets.UTF_8)));
             if (HttpUtil.isKeepAlive(msg)) {
