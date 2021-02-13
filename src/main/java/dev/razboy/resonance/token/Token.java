@@ -6,7 +6,7 @@ public class Token {
     private String token;
     private final long creationTime;
     public Token() {
-        token = TokenManager.generateToken(32);
+        token = TokenManager.generateToken(64);
         creationTime = System.currentTimeMillis();
     }
     @Override

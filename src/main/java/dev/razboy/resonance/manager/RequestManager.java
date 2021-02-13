@@ -5,6 +5,7 @@ import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.config.ConfigType;
 import dev.razboy.resonance.files.FileUtils;
 import dev.razboy.resonance.server.RequestHandler;
+import dev.razboy.resonance.token.AuthToken;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,6 +17,8 @@ import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class RequestManager {
     private final Resonance plugin;
@@ -68,9 +71,12 @@ public class RequestManager {
             Resonance.log(body.get("token").toString());
             if(Resonance.getTokenManager().validateAuthToken(body.get("token").toString())){
                 Resonance.log("authenticated");
-                response = response +  quote("action") + ":" + quote("authenticated") + "," + quote("body") + ":{" + quote("token") + ":" + quote(Resonance.getTokenManager().getAuthTokenFromAuthToken(body.get("token").toString()).getToken().toString()) + "}";
+                handler.state = "authenticated";
+                AuthToken authToken = Resonance.getTokenManager().getAuthTokenFromAuthToken(body.get("token").toString());
+                response = response +  quote("action") + ":" + quote("authenticated") + "," + quote("body") + ":{" + quote("token") + ":" + quote(authToken.getToken().toString()) + ",\"user\":{\"uuid\":" + quote(authToken.getUuid()) + ",\"username\":" + quote(authToken.getUsername()) + "}}";
             } else {
                 Resonance.log("failed to auth");
+                handler.state = "connected";
                 response = response +  quote("action") + ":" + quote("authentication_failed") + "," + quote("body") + ":{}";
             }
             System.out.println("2: " + response);
@@ -90,6 +96,7 @@ public class RequestManager {
                 return false;
             }
             handshaker.handshake(ctx.channel(), request);
+            handler.state = "connected";
             return true;
 
         }

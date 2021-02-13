@@ -28,16 +28,16 @@ public class TokenManager {
 
 
     public TokenManager() {
-        generateAuthToken(UUID.randomUUID().toString());
+        generateAuthToken(UUID.randomUUID().toString(), "urmomidklol");
     }
 
-    public void generateAuthToken(String uuid) {
+    public void generateAuthToken(String uuid, String username) {
         // If a AuthToken already exists with the given UUID linked with it, delete/replace it, regardless of age.
         if (uuidToAuthTokens.containsKey(uuid)) {
             authTokenStringToUuids.remove(uuidToAuthTokens.get(uuid).toString());
             uuidToAuthTokens.remove(uuid);
         }
-        AuthToken authToken = new AuthToken();
+        AuthToken authToken = new AuthToken(uuid, username);
         uuidToAuthTokens.put(uuid, authToken);
         authTokenStringToUuids.put(authToken.toString(), uuid);
 
