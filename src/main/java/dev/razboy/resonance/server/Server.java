@@ -1,38 +1,44 @@
-package dev.razboy.resonance.server.http;
+package dev.razboy.resonance.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
-//import io.netty.channel.EventLoopGroup;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 
-public class HttpServer implements Runnable{
+public class Server implements Runnable {
+    private static final boolean SSL = false;
     private static final int PORT = 25560;
-    private static final NioEventLoopGroup bossGroup = new NioEventLoopGroup();
-    private static final NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+    private static final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
+    private static final EventLoopGroup workerGroup = new NioEventLoopGroup();
+    public static void main(String[] args) throws Exception {
 
-    public static void main(String[] args) {
-        // Configure the server.
+
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new HttpInitializer());
+                    .childHandler(new ServerInitializer());
 
             Channel ch = b.bind(PORT).sync().channel();
-
             ch.closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
     }
 
+
     @Override
     public void run() {
-        main(new String[] {});
+        try {
+            main(new String[0]);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public void stop() {
         bossGroup.shutdownGracefully();

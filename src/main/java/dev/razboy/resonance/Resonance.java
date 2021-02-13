@@ -1,8 +1,7 @@
 package dev.razboy.resonance;
 
-import dev.razboy.resonance.commands.VoiceConnectCommand;
-import dev.razboy.resonance.server.http.HttpServer;
-import dev.razboy.resonance.server.structs.tokens.TokenManager;
+import dev.razboy.resonance.manager.RequestManager;
+import dev.razboy.resonance.server.Server;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,11 +11,11 @@ import java.io.File;
 import java.nio.file.Path;
 
 public class Resonance extends JavaPlugin {
-    private final HttpServer httpServer = new HttpServer();
+    private final Server httpServer = new Server();
     public static Path websiteFolder;
     private static BukkitAudiences adventure;
     private static Resonance instance;
-    private final TokenManager tokenManager = new TokenManager(this);
+    private static RequestManager requestManager;
     public @NonNull BukkitAudiences adventure() {
         if(adventure == null) {
             throw new IllegalStateException("Tried to access Adventure when the plugin was disabled!");
@@ -29,7 +28,7 @@ public class Resonance extends JavaPlugin {
         instance = this;
         adventure = BukkitAudiences.create(this);
         websiteFolder = new File(getDataFolder(), "website").toPath();
-        getCommand("voiceconnect").setExecutor(new VoiceConnectCommand());
+        requestManager = new RequestManager(this);
         Bukkit.getScheduler().runTaskAsynchronously(this, httpServer);
     }
     @Override
@@ -46,7 +45,5 @@ public class Resonance extends JavaPlugin {
     public static Resonance getInstance() {
         return instance;
     }
-    public TokenManager getTokenManager() {
-        return tokenManager;
-    }
+    public static RequestManager getRequestManager() {return requestManager;}
 }
