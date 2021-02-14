@@ -7,3 +7,5 @@ commands:
     aliases:
       - vc
     description: "voiceconnectsmthidk"
+  webcast:
+    description: "broadcastsmthidk"

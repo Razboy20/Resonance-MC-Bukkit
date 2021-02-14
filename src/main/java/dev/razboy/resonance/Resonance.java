@@ -1,5 +1,7 @@
 package dev.razboy.resonance;
 
+import dev.razboy.resonance.commands.BroadcastCommand;
+import dev.razboy.resonance.commands.VoiceConnectCommand;
 import dev.razboy.resonance.manager.ConfigManager;
 import dev.razboy.resonance.manager.RequestManager;
 import dev.razboy.resonance.manager.TokenManager;
@@ -8,9 +10,15 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.json.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Resonance extends JavaPlugin {
@@ -41,11 +49,13 @@ public class Resonance extends JavaPlugin {
 
         configManager = new ConfigManager(getDataFolder());
         tokenManager = new TokenManager();
-        tokenManager.generateAuthToken("7cf37f90-bb59-4ffa-8533-13714dee6cc3", "urmomidklol");
+        tokenManager.generateAuthToken("b3af680f-f41b-41fb-9fcd-4dd2e13bf7fb", "razboy20", "DYlbyU_vmYU");
 
 
         websiteFolder = new File(getDataFolder(), "website").toPath();
         requestManager = new RequestManager(this);
+        Objects.requireNonNull(getCommand("voiceconnect")).setExecutor(new VoiceConnectCommand());
+        Objects.requireNonNull(getCommand("webcast")).setExecutor(new BroadcastCommand());
         Bukkit.getScheduler().runTaskAsynchronously(this, httpServer);
     }
     @Override

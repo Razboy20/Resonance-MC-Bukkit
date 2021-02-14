@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class TokensConfig extends Configuration {
+    private static final String USERS = "Users.";
+    private static final String TOKENS = "Tokens.";
     @Override
     protected String getFileName() {
         return "tokens.yml";
@@ -20,19 +22,33 @@ public class TokensConfig extends Configuration {
         this.options().copyDefaults(true);
     }
     public boolean containsToken(String uuid) {
-        return !Objects.requireNonNull(this.getString(uuid + ".Token", "")).isEmpty();
+        return !Objects.requireNonNull(this.getString(USERS + uuid + ".Token", "")).isEmpty();
+    }
+    public boolean containsUuid(String token) {
+        return !Objects.requireNonNull(this.getString(TOKENS + token, "")).isEmpty();
     }
     public long getCreationTime(String uuid) {
-        return this.getLong(uuid + ".Creation", 0L);
+        return this.getLong( USERS + uuid + ".Creation", 0L);
     }
     public String getToken(String uuid) {
-        return this.getString(uuid + ".Token", "");
+        return this.getString(USERS + uuid + ".Token", "");
+    }
+    public String getUsername(String uuid) {
+        return this.getString(USERS + uuid + ".Username", "");
+    }
+    public String getUuid(String token) {
+        return this.getString(TOKENS + token, "");
     }
     public void saveToken(Token token) {
+        String oldToken = getToken(token.getUuid());
+        if (!oldToken.isEmpty()) {
+            this.set(TOKENS + oldToken, null);
+        }
         String uuid = token.getUuid();
-        this.set(uuid + ".Token", token.toString());
-        this.set(uuid + ".Creation", token.getCreationTime());
-        this.set(uuid + ".Username", token.getUsername());
+        this.set(TOKENS + token.toString(), uuid);
+        this.set(USERS + uuid + ".Token", token.toString());
+        this.set(USERS + uuid + ".Creation", token.getCreationTime());
+        this.set(USERS + uuid + ".Username", token.getUsername());
         this.save();
     }
 }

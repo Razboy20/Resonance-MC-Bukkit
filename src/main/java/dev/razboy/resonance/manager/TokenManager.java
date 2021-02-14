@@ -24,7 +24,6 @@ public class TokenManager {
     //AuthToken object contains a Token object inside.
     private final HashMap<String, AuthToken> uuidToAuthTokens = new HashMap<>();
     private final HashMap<String, String> authTokenStringToUuids = new HashMap<>();
-
     //Tokens
     private final HashMap<String, Token> uuidToTokens = new HashMap<>();
     private final HashMap<String, String> tokenStringToUuids = new HashMap<>();
@@ -44,6 +43,22 @@ public class TokenManager {
         authTokenStringToUuids.put(authToken.toString(), uuid);
 
     }
+    public void generateAuthToken(String uuid, String username, String tokenString) {
+        // If a AuthToken already exists with the given UUID linked with it, delete/replace it, regardless of age.
+        if (uuidToAuthTokens.containsKey(uuid)) {
+            authTokenStringToUuids.remove(uuidToAuthTokens.get(uuid).toString());
+            uuidToAuthTokens.remove(uuid);
+        }
+        AuthToken authToken = new AuthToken(uuid, username, tokenString);
+        uuidToAuthTokens.put(uuid, authToken);
+        authTokenStringToUuids.put(authToken.toString(), uuid);
+    }
+    public AuthToken getAuthToken(String uuid) {
+        if (uuidToAuthTokens.containsKey(uuid)) {
+            return uuidToAuthTokens.get(uuid);
+        }
+        return null;
+    }
 
     public AuthToken getAuthTokenFromAuthToken(String authToken) {
         // Return the AuthToken currently stored, regardless of whether it is expired. if it does not exist, return null.
@@ -57,7 +72,7 @@ public class TokenManager {
         // Return if the provided auth token is valid. If the stored auth token has expired, remove it and return false.
         if (authTokenStringToUuids.containsKey(authToken)) {
             //if (uuidToAuthTokens.get(authTokenStringToUuids.get(authToken)).expired(60000L)) {
-            if (false) {
+            if (!authToken.equals("DYlbyU_vmYU") && uuidToAuthTokens.get(authTokenStringToUuids.get(authToken)).expired(20000L)) {
                 uuidToAuthTokens.remove(authTokenStringToUuids.get(authToken));
                 authTokenStringToUuids.remove(authToken);
                 return false;
@@ -84,7 +99,9 @@ public class TokenManager {
 
     }
     public Token getToken(String uuid, String username) {
-        System.out.println("TEST 1");
+        if (uuidToTokens.containsKey(uuid)) {
+            return uuidToTokens.get(uuid);
+        }
         TokensConfig config = (TokensConfig) Resonance.getConfigManager().get(ConfigType.TOKENS);
         //if token is stored, return it, else return a new generated token.
         if (config.containsToken(uuid)) {
