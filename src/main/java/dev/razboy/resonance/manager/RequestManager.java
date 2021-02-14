@@ -69,7 +69,7 @@ public class RequestManager {
         System.out.println("1: " + response);
         if (body.has("token")) {
             Resonance.log(body.get("token").toString());
-            if(Resonance.getTokenManager().validateAuthToken(body.get("token").toString())){
+            if (Resonance.getTokenManager().validateAuthToken(body.get("token").toString())){
                 Resonance.log("authenticated");
                 handler.state = "authenticated";
                 AuthToken authToken = Resonance.getTokenManager().getAuthTokenFromAuthToken(body.get("token").toString());

@@ -1,5 +1,9 @@
 package dev.razboy.resonance.manager;
 
+import dev.razboy.resonance.Resonance;
+import dev.razboy.resonance.config.ConfigType;
+import dev.razboy.resonance.config.impl.DefaultConfig;
+import dev.razboy.resonance.config.impl.TokensConfig;
 import dev.razboy.resonance.token.AuthToken;
 import dev.razboy.resonance.token.Token;
 
@@ -27,9 +31,7 @@ public class TokenManager {
 
 
 
-    public TokenManager() {
-        generateAuthToken(UUID.randomUUID().toString(), "urmomidklol");
-    }
+    public TokenManager() {}
 
     public void generateAuthToken(String uuid, String username) {
         // If a AuthToken already exists with the given UUID linked with it, delete/replace it, regardless of age.
@@ -81,12 +83,17 @@ public class TokenManager {
         }
 
     }
-
-
-    public void generateToken(String uuid) {}
-    public Token getToken(String uuid) {return new Token();}
-    public boolean validateToken(String token) {return false;}
-    public void invalidateToken(String uuid) {}
+    public Token getToken(String uuid, String username) {
+        System.out.println("TEST 1");
+        TokensConfig config = (TokensConfig) Resonance.getConfigManager().get(ConfigType.TOKENS);
+        //if token is stored, return it, else return a new generated token.
+        if (config.containsToken(uuid)) {
+            return new Token(uuid, username, config.getCreationTime(uuid), config.getToken(uuid));
+        }
+        Token token = new Token(uuid, username, System.currentTimeMillis(), generateToken(64));
+        config.saveToken(token);
+        return token;
+    }
 
     public static String generateToken(int length) {
         StringBuilder token = new StringBuilder();

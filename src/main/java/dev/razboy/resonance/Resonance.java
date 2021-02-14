@@ -11,6 +11,7 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.UUID;
 
 public class Resonance extends JavaPlugin {
     private final Server httpServer = new Server();
@@ -40,6 +41,7 @@ public class Resonance extends JavaPlugin {
 
         configManager = new ConfigManager(getDataFolder());
         tokenManager = new TokenManager();
+        tokenManager.generateAuthToken("7cf37f90-bb59-4ffa-8533-13714dee6cc3", "urmomidklol");
 
 
         websiteFolder = new File(getDataFolder(), "website").toPath();
