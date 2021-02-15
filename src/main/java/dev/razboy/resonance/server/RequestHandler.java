@@ -37,6 +37,11 @@ public class RequestHandler extends SimpleChannelInboundHandler<Object> {
         cause.printStackTrace();
         ctx.close();
     }
+    @Override
+    public void handlerRemoved(ChannelHandlerContext ctx) {
+        Resonance.getRequestManager().removeHandler(this, ctx);
+    }
+
     public String getRemote() {return remote;}
     public int getRequests() {return requests;}
     public ChannelHandlerContext getCtx() {return context;}
