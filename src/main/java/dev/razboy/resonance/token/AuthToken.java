@@ -17,7 +17,7 @@ public class AuthToken {
         creationTime = System.currentTimeMillis();
     }
     public AuthToken(String uuid, String username) {
-        this(uuid, username,  TokenManager.generateToken(11));
+        this(uuid, username,  TokenManager.generateToken(6));
     }
 
 

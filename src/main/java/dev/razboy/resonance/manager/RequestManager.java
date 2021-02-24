@@ -15,7 +15,9 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RequestManager {
     private final Resonance plugin;
@@ -52,8 +54,13 @@ public class RequestManager {
                 switch (json.get("action").toString()) {
                     case "authenticate":
                         authenticateWebsocketMessage(handler, ctx, json);
+                        break;
                     case "user_info":
                         userInfoWebsocketMessage(handler, ctx, json);
+                        break;
+                    case "connected_users":
+                        connectedUsersWebsocketMessage(handler,ctx, json);
+                        break;
                 }
             }
         } catch (Exception e) {
@@ -64,41 +71,66 @@ public class RequestManager {
 
     private void authenticateWebsocketMessage(RequestHandler handler, ChannelHandlerContext ctx, JSONObject json) {
         //Check if message is in valid format
-        JSONObject body = json.getJSONObject("body");
-        String response = addID("{", json);
-        if (body.has("token")) {
-            if (Resonance.getTokenManager().validateAuthToken(body.get("token").toString())){
-                handler.state = "authenticated";
-                AuthToken authToken = Resonance.getTokenManager().getAuthTokenFromAuthToken(body.get("token").toString());
-                addUserToAuthList(handler, ctx, authToken.getToken());
-                if (!authToken.toString().equals("DYlbyU_vmYU")) {
-                    Resonance.getTokenManager().invalidateAuthToken(authToken.getUuid());
+        try {
+            JSONObject body = json.getJSONObject("body");
+            String response = addID("{", json);
+            if (body.has("token")) {
+                if (Resonance.getTokenManager().validateAuthToken(body.get("token").toString())) {
+                    handler.state = "authenticated";
+                    AuthToken authToken = Resonance.getTokenManager().getAuthTokenFromAuthTokenString(body.get("token").toString());
+                    addUserToAuthList(handler, ctx, authToken.getToken());
+                    if (!authToken.toString().equals(TokenManager.DEV_TOKEN)) {
+                        Resonance.getTokenManager().invalidateAuthToken(authToken.getUuid());
+                    }
+                    response = response + quote("action") + ":" + quote("authenticated") + "," + quote("body") + ":{" + quote("token") + ":" + quote(authToken.getToken().toString()) + ",\"user\":{\"uuid\":" + quote(authToken.getUuid()) + ",\"username\":" + quote(authToken.getUsername()) + "}}";
+                } else {
+                    handler.state = "connected";
+                    removeUserFromAuthList(handler, ctx);
+                    response = response + quote("action") + ":" + quote("authentication_failed") + "," + quote("body") + ":{}";
                 }
-                response = response +  quote("action") + ":" + quote("authenticated") + "," + quote("body") + ":{" + quote("token") + ":" + quote(authToken.getToken().toString()) + ",\"user\":{\"uuid\":" + quote(authToken.getUuid()) + ",\"username\":" + quote(authToken.getUsername()) + "}}";
-            } else {
-                handler.state = "connected";
-                removeUserFromAuthList(handler, ctx);
-                response = response +  quote("action") + ":" + quote("authentication_failed") + "," + quote("body") + ":{}";
+                ctx.write(new TextWebSocketFrame(response + "}"));
             }
-            ctx.write(new TextWebSocketFrame(response + "}"));
+        } catch (Exception ignored) {}
+    }
+
+    private void connectedUsersWebsocketMessage(RequestHandler handler, ChannelHandlerContext ctx, JSONObject json) {
+        TokenManager tokenManager = Resonance.getTokenManager();
+        String response = addID("{", json);
+        if (json.has("bearer")) {
+            String bearer = json.get("bearer").toString();
+            if (tokenManager.validateToken(bearer)) {
+                List<String> uuids = new ArrayList<>(uuidToRequestHandlers.keySet());
+                response+=("\"action\":\"connected_users\",\"body\":{\"users\":[");
+                response+=(String.join(",", uuids));
+                response+=("]}}");
+                System.out.println(response);
+                ctx.write(new TextWebSocketFrame(response));
+            } else {
+                ctx.write(new TextWebSocketFrame(response + "\"action\":\"authentication_failed\"}"));
+            }
         }
     }
 
     private void userInfoWebsocketMessage(RequestHandler handler, ChannelHandlerContext ctx, JSONObject json) {
         TokensConfig config = (TokensConfig) Resonance.getConfigManager().get(ConfigType.TOKENS);
-        String uuid = "null";
-        String username = "";
+        TokenManager tokenManager = Resonance.getTokenManager();
+        String response = addID("{", json);
+        String uuid;
+        String username;
         if (json.has("bearer")) {
             String bearer = json.get("bearer").toString();
-            if (config.containsUuid(bearer)) {
-                uuid = config.getUuid(bearer);
-                username = config.getUsername(uuid);
+            if (tokenManager.validateToken(bearer)) {
+                //Token token = tokenManager.updateToken(bearer);
+                Token token = tokenManager.getTokenFromTokenString(bearer);
+                uuid = token.getUuid();
+                username = token.getUsername();
+                handler.state = "authenticated";
+                addUserToAuthList(handler, ctx, Resonance.getTokenManager().getToken(uuid, username));
+                response += "\"action\":\"user_info\",\"body\":{\"uuid\":" + quote(uuid) + ",\"username\":" + quote(username) + ",\"token\":" + quote(token.toString()) + "}}";
+                ctx.write(new TextWebSocketFrame(response));
+                return;
             }
-            String response = addID("{", json);
-            handler.state = "authenticated";
-            addUserToAuthList(handler, ctx, Resonance.getTokenManager().getToken(uuid, username));
-            response =  response + "\"action\":\"user_info\",\"body\":{\"uuid\":" + quote(uuid) + ",\"username\":" + quote(username) + "}}";
-            ctx.write(new TextWebSocketFrame(response));
+            ctx.write(new TextWebSocketFrame(response + "\"action\":\"authentication_failed\"}"));
         }
     }
 
@@ -141,10 +173,11 @@ public class RequestManager {
     }
 
     private void addUserToAuthList(RequestHandler h, ChannelHandlerContext ctx, Token token) {
-        System.out.println("Adding User to Authlist. Token (" + token.toString() + "/" + token.getUuid() + ") Will be linked with a Handler (/" + h.getRemote() + ").");
+        //System.out.println("Adding User to Authlist. Token (" + token.toString() + "/" + token.getUuid() + ") Will be linked with a Handler (/" + h.getRemote() + ").");
         removeOldUsersFromAuthList(h, ctx, token);
         uuidToRequestHandlers.put(token.getUuid(), h);
         requestHandlerToUuids.put(h, token.getUuid());
+        /*
         System.out.println("\n\nCurrent State of table:");
         int i = 1;
         for (RequestHandler handler : uuidToRequestHandlers.values()) {
@@ -163,8 +196,12 @@ public class RequestManager {
         if (i == 1) {
             System.out.println("(Empty)");
         }
+        */
         h.token = token;
         System.out.println("Added User(" + h.getRemote() + "), token: " + token.toString() + ", UUID: " + token.getUuid() + ", to AUTH list");
+        System.out.println("Tables (connected):");
+        uuidToRequestHandlers.forEach((key, value) -> System.out.println(key + " | " + value.getRemote()+value.token));
+        requestHandlerToUuids.forEach((key, value) -> System.out.println(key.getRemote()+key.token + " | " + value));
     }
     private void removeUserFromAuthList(RequestHandler h, ChannelHandlerContext ctx) {
         if (h.token != null) {
@@ -179,30 +216,19 @@ public class RequestManager {
             requestHandlerToUuids.remove(h);
             System.out.println("Removed User(" + h.getRemote() + "), UUID: " + uuid + ", from AUTH list");
         }
-        System.out.println("\n\nCurrent State of table:");
-        int i = 1;
-        for (RequestHandler handler : uuidToRequestHandlers.values()) {
-            System.out.println(i + ") " + handler.getRemote() + "/" + requestHandlerToUuids.get(handler));
-            i++;
-        }
-        if (i == 1) {
-            System.out.println("(Empty)");
-        }
-        System.out.println("\nReverse table: ");
-        i = 1;
-        for (String uuid : requestHandlerToUuids.values()) {
-            System.out.println(i + ") " + uuid);
-            i++;
-        }
-        if (i == 1) {
-            System.out.println("(Empty)");
-        }
+        System.out.println("Tables (connected):");
+        uuidToRequestHandlers.forEach((key, value) -> System.out.println(key + " | " + value.getRemote()+value.token));
+        System.out.println("Reversed Table (connected):");
+        requestHandlerToUuids.forEach((key, value) -> System.out.println(key.getRemote()+key.token + " | " + value));
     }
     private void removeOldUsersFromAuthList(RequestHandler h, ChannelHandlerContext ctx, Token token) {
         if (uuidToRequestHandlers.containsKey(token.getUuid())) {
-            requestHandlerToUuids.remove(uuidToRequestHandlers.get(token.getUuid()));
-            uuidToRequestHandlers.remove(token.getUuid());
+            removeUserFromAuthList(uuidToRequestHandlers.get(token.getUuid()), ctx);
         }
+        System.out.println("Table (connected):");
+        uuidToRequestHandlers.forEach((key, value) -> System.out.println(key + " | " + value.getRemote()+value.token));
+        System.out.println("Reversed Table (connected):");
+        requestHandlerToUuids.forEach((key, value) -> System.out.println(key.getRemote()+key.token + " | " + value));
     }
 
     public void broadcast(String message) {

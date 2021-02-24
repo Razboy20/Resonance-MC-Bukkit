@@ -49,7 +49,7 @@ public class Resonance extends JavaPlugin {
 
         configManager = new ConfigManager(getDataFolder());
         tokenManager = new TokenManager();
-        tokenManager.generateAuthToken("b3af680f-f41b-41fb-9fcd-4dd2e13bf7fb", "razboy20", "DYlbyU_vmYU");
+        tokenManager.generateAuthToken("b3af680f-f41b-41fb-9fcd-4dd2e13bf7fb", "razboy20", TokenManager.DEV_TOKEN);
 
 
         websiteFolder = new File(getDataFolder(), "website").toPath();

@@ -4,6 +4,7 @@ import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.token.AuthToken;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,8 +22,8 @@ public class VoiceConnectCommand implements CommandExecutor {
             Resonance.getTokenManager().generateAuthToken(player.getUniqueId().toString(), player.getName());
             AuthToken token = Resonance.getTokenManager().getAuthToken(player.getUniqueId().toString());
             if (token != null) {
-                String message = "<click:copy_to_clipboard:" + token.toString() + ">[COPY]</click>, or </click:open_url:https\\:\\/\\/thiccaxe.net\\/token\\/" + token.toString() + ">[LINK]</click>";
-                audience.sendMessage(MiniMessage.get().parse(message));
+                Component message = Component.text(token.toString(), TextColor.color(0x444444));
+                audience.sendMessage(message);
                 return true;
             }
             audience.sendMessage(errorMessage);

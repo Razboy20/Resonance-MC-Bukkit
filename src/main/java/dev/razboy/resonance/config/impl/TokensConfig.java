@@ -51,4 +51,11 @@ public class TokensConfig extends Configuration {
         this.set(USERS + uuid + ".Username", token.getUsername());
         this.save();
     }
+    public void updateToken(Token oldToken, Token token) {
+        if (containsUuid(oldToken.toString())) {
+            this.set(TOKENS + oldToken.toString(), null);
+            this.saveToken(token);
+
+        }
+    }
 }

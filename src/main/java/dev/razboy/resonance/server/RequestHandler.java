@@ -32,6 +32,7 @@ public class RequestHandler extends SimpleChannelInboundHandler<Object> {
         ctx.flush();
     }
 
+
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();

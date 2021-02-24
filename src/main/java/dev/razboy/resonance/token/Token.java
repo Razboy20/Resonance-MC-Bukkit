@@ -24,4 +24,8 @@ public class Token {
     public String getUsername() {return username;}
     public String getUuid() {return uuid;}
     public long getCreationTime() {return creationTime;}
+
+    public void setToken(String token) {
+        tokenString = token;
+    }
 }
