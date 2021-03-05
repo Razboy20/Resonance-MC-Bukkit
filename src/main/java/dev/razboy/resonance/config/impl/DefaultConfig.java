@@ -1,8 +1,8 @@
 package dev.razboy.resonance.config.impl;
 
-import dev.razboy.resonance.config.Configuration;
+import dev.razboy.resonance.config.Config;
 
-public class DefaultConfig extends Configuration {
+public class DefaultConfig extends Config {
     @Override
     protected String getFileName() {
         return "config.yml";

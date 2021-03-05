@@ -3,8 +3,8 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-group 'dev.razboy.resonance'
-version '1.0-SNAPSHOT'
+group 'dev.razboy'
+version '1.0.0'
 targetCompatibility = '11'
 sourceCompatibility = '11'
 repositories {
@@ -22,9 +22,10 @@ repositories {
 dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'io.netty:netty-all:4.1.56.Final'
-    implementation "net.kyori:adventure-api:4.4.0"
-    implementation "net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT"
-    implementation "net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT"
-    compile group: 'org.json', name: 'json', version: '20201115'
+    implementation ("net.kyori:adventure-api:4.4.0")
+    implementation ("net.kyori:adventure-platform-bukkit:4.0.0-SNAPSHOT")
+    implementation ("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
+    implementation (group: 'org.json', name: 'json', version: '20201115')
+    implementation ("com.google.guava:guava:30.1-jre")
 
 }

@@ -8,7 +8,7 @@ import org.yaml.snakeyaml.error.YAMLException;
 import java.io.File;
 import java.io.IOException;
 
-public abstract class Configuration extends YamlConfiguration {
+public abstract class Config extends YamlConfiguration {
 
     protected File file;
     protected abstract String getFileName();

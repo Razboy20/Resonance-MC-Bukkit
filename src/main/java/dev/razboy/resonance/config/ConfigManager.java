@@ -1,9 +1,7 @@
-package dev.razboy.resonance.manager;
+package dev.razboy.resonance.config;
 
-import dev.razboy.resonance.config.ConfigType;
-import dev.razboy.resonance.config.Configuration;
 import dev.razboy.resonance.config.impl.DefaultConfig;
-import dev.razboy.resonance.config.impl.TokensConfig;
+import dev.razboy.resonance.config.impl.TokenConfig;
 
 import java.io.File;
 import java.util.EnumMap;
@@ -11,24 +9,24 @@ import java.util.EnumMap;
 public class ConfigManager {
     private final File dataFolder;
 
-    private final EnumMap<ConfigType, Configuration> configs = new EnumMap<>(ConfigType.class);
+    private final EnumMap<ConfigType, Config> configs = new EnumMap<>(ConfigType.class);
 
     public ConfigManager(File dataFolder) {
         this.dataFolder = dataFolder;
         createPluginFolder();
 
         configs.put(ConfigType.DEFAULT, new DefaultConfig());
-        configs.put(ConfigType.TOKENS, new TokensConfig());
+        configs.put(ConfigType.TOKENS, new TokenConfig());
 
-        for (Configuration config : configs.values()) {
+        for (Config config : configs.values()) {
             config.setupFile(this.dataFolder);
         }
     }
-    public Configuration get(ConfigType type) {
+    public Config get(ConfigType type) {
         return configs.get(type);
     }
     public void reloadConfigs() {
-        for (Configuration parkourConfig : configs.values()) {
+        for (Config parkourConfig : configs.values()) {
             parkourConfig.reload();
         }
     }

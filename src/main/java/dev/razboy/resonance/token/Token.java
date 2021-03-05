@@ -1,31 +1,37 @@
 package dev.razboy.resonance.token;
 
-import dev.razboy.resonance.Resonance;
-import dev.razboy.resonance.config.ConfigType;
-import dev.razboy.resonance.config.impl.TokensConfig;
-import dev.razboy.resonance.manager.TokenManager;
+import java.util.UUID;
 
 public class Token {
-    private String uuid;
-    private String username;
-    private String tokenString;
-    private long creationTime;
-    public Token(String uuid, String username, long creationTime, String token) {
-        this.uuid = uuid;
-        this.username = username;
-        this.creationTime = creationTime;
-        this.tokenString = token;
-    }
+    private static final int SHORT_LEN = 6;
+    private static final String SHORT_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final int FULL_LEN = 64;
+    private static final String FULL_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_";
 
-    @Override
-    public String toString() {
-        return tokenString;
-    }
-    public String getUsername() {return username;}
-    public String getUuid() {return uuid;}
-    public long getCreationTime() {return creationTime;}
 
-    public void setToken(String token) {
+    private final String tokenString;
+    private final long creationTime;
+    private final String usernameString;
+    private final String uuidString;
+    private final boolean tokenType;
+
+    public Token(String token, long creation, String uuid, String username, boolean type) {
         tokenString = token;
+        creationTime = creation;
+        usernameString = username;
+        uuidString = uuid;
+        tokenType = type;
     }
+    public Token(String uuid, String username, boolean type) {
+        tokenString = TokenManager.generateToken(type ? FULL_LEN : SHORT_LEN, type ? FULL_CHARS : SHORT_CHARS);
+        creationTime = System.currentTimeMillis();
+        usernameString = username;
+        uuidString = uuid;
+        tokenType = type;
+    }
+
+    public String token() {return tokenString;}
+    public long creation() {return creationTime;}
+    public String username() {return usernameString;}
+    public String uuid() {return uuidString;}
 }
