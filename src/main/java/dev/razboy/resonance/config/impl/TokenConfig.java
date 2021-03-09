@@ -38,7 +38,7 @@ public class TokenConfig extends Config {
             ConfigurationSection tokenSection = Objects.requireNonNull(this.getConfigurationSection("Tokens"));
             Set<String> keys = tokenSection.getKeys(false);
             keys.forEach((key) -> {
-                System.out.println(key + "/" + Objects.requireNonNull(tokenSection.getString(key)));
+                //System.out.println(key + "/" + Objects.requireNonNull(tokenSection.getString(key)));
                 if (userSection.contains(Objects.requireNonNull(tokenSection.getString(key)))) {
                     ConfigurationSection user = Objects.requireNonNull(userSection.getConfigurationSection(Objects.requireNonNull(tokenSection.getString(key))));
                     tokens.put(new Token(

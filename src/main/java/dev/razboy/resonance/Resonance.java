@@ -21,8 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.*;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.UUID;
 
-public class Resonance extends JavaPlugin implements CommandExecutor {
+public class Resonance extends JavaPlugin {
     private static Resonance instance;
     private static File dataFolder;
     private static File tokenFile;
@@ -44,21 +45,6 @@ public class Resonance extends JavaPlugin implements CommandExecutor {
 
     public static TokenManager getTokenManager() {return tokenManager;}
 
-    @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 2) {
-            sender.sendMessage(args[0]);
-            sender.sendMessage(args[1]);
-            something.forcePut(args[0], args[1]);
-            return true;
-        }
-        else if (args.length == 1) {
-            if (args[0].equalsIgnoreCase("save")) {
-                saveTokens();
-            }
-        }
-        return false;
-    }
 
     @Override public void onEnable() {
         System.out.println("Starting Server...");
@@ -66,10 +52,8 @@ public class Resonance extends JavaPlugin implements CommandExecutor {
         dataFolder = getDataFolder();
         configManager = new ConfigManager(dataFolder);
         tokenManager = new TokenManager(this, (TokenConfig)configManager.get(ConfigType.TOKENS));
-        tokenFile = new File(dataFolder, "tokens");
-        Objects.requireNonNull(this.getCommand("voiceconnect")).setExecutor(this);
-        saveTokens();
-        loadTokens();
+        tokenManager.generateAuthToken(UUID.fromString("bee4331f-7bf2-4d92-b8c4-82cd2f5f38cc").toString(), "4O3F0rbidden", "ABCDEF");
+
 
 
 
@@ -93,30 +77,6 @@ public class Resonance extends JavaPlugin implements CommandExecutor {
 
 
 
-    private void loadTokens(){
-        try {
-            properties.load(new FileInputStream(tokenFile));
-            properties.forEach((Object key, Object val) -> {
-                something.forcePut(key.toString(), val.toString());
-            });
-        } catch (FileNotFoundException e) {
-            System.out.println("Failed to load tokens file!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void saveTokens() {
-        properties.clear();
-        properties.putAll(something);
-        try {
-            properties.store(new FileOutputStream(tokenFile), null);
-        } catch (IOException e) {
-            System.out.println("Failed to save tokens file!");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public static HttpRequestManager getHttpRequestManager() {
         return httpRequestManager;

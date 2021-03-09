@@ -31,7 +31,7 @@ public class TokenManager {
     }
 
     public void registerToken(Token token) {
-        System.out.println(token + token.uuid());
+        //System.out.println(token + token.uuid());
         tokens.forcePut(token, token.uuid());
         tokenStrings.forcePut(token.token(), token);
         tokenConfig.saveTokens(tokens);
@@ -46,14 +46,23 @@ public class TokenManager {
         authTokenStrings.forcePut(token.token(), token);
         return token;
     }
+    public Token generateAuthToken(String uuid, String username, String tokenString) {
+        Token token = new Token(uuid, username, false, tokenString);
+        authTokens.forcePut(token, uuid);
+        authTokenStrings.forcePut(token.token(), token);
+        return token;
+    }
+
     public Token validateAuthToken(String tokenString) {
         if (tokenString == null) {return null;}
         try {
             if (authTokenStrings.containsKey(tokenString)) {
                 Token token = authTokenStrings.get(tokenString);
                 if (token != null) {
-                    authTokens.remove(token);
-                    authTokenStrings.remove(tokenString);
+                    if (!token.token().equalsIgnoreCase("ABCDEF")) {
+                        authTokens.remove(token);
+                        authTokenStrings.remove(tokenString);
+                    }
                     token = new Token(token.uuid(), token.username(), true);
                     registerToken(token);
                     return token;

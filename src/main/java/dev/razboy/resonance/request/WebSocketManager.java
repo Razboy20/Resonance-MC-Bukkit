@@ -2,6 +2,7 @@ package dev.razboy.resonance.request;
 
 import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.Resonance;
+import dev.razboy.resonance.client.Client;
 import dev.razboy.resonance.client.Clients;
 import dev.razboy.resonance.network.Connection;
 import dev.razboy.resonance.network.Request;
@@ -45,6 +46,7 @@ public class WebSocketManager extends IRequestManager {
                 clients.sendAll(message);
             }
         }
+        clients.update();
     }
 
     @Override
@@ -56,16 +58,6 @@ public class WebSocketManager extends IRequestManager {
         String text = frame.text();
         try {
             JSONObject json = new JSONObject(text);
-            if (json.has("action")) {
-                //System.out.println("Action: " + json.get("action").toString());
-            }
-            if (json.has("bearer")) {
-                //System.out.println("Token: " + json.get("bearer").toString());
-            }
-            if (json.has("body") && json.get("body") instanceof JSONObject) {
-                //System.out.println("Body:\n" + json.getJSONObject("body").toString(1));
-            }
-            //System.out.println(json.toString(1));
             if (!validateJson(json)) {
                 close(request);
             }
@@ -87,10 +79,6 @@ public class WebSocketManager extends IRequestManager {
 
                 }
             }
-
-
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e) {
@@ -110,8 +98,8 @@ public class WebSocketManager extends IRequestManager {
             TokenManager tokenManager = Resonance.getTokenManager();
             Token token = tokenManager.validateToken(bearer);
             if (token != null) {
-                clients.addClient(token.token(), request.connection);
-                sendUserInfoMessage(request, token, json);
+                clients.addClient(token, request.connection);
+                sendUserInfoMessage(request, clients.getClient(token.token()), json);
                 return;
             }
 
@@ -126,8 +114,8 @@ public class WebSocketManager extends IRequestManager {
             if (body.has("token")) {
                 Token token = Resonance.getTokenManager().validateAuthToken(body.get("token").toString());
                 if (token != null) {
-                    clients.addClient(token.token(), request.connection);
-                    sendAuthenticatedMessage(request, token, json);
+                    clients.addClient(token, request.connection);
+                    sendAuthenticatedMessage(request, clients.getClient(token.token()), json);
                     return;
                 }
             }
@@ -135,8 +123,8 @@ public class WebSocketManager extends IRequestManager {
         sendAuthFailedMessage(request, json);
     }
 
-    private void sendUserInfoMessage(Request request, Token token, JSONObject json) {
-        JSONObject body = new JSONObject().put("token", token.token()).put("user", getUser(null, token));
+    private void sendUserInfoMessage(Request request, Client client, JSONObject json) {
+        JSONObject body = new JSONObject().put("token", client.getToken().token()).put("user", client.getUserJson());
         JSONObject message = withIdActionBody(json, "user_info", body);
         request.ctx.writeAndFlush(new TextWebSocketFrame(message.toString()));
     }
@@ -146,8 +134,8 @@ public class WebSocketManager extends IRequestManager {
         request.ctx.writeAndFlush(new TextWebSocketFrame(message.toString()));
     }
 
-    private void sendAuthenticatedMessage(Request request, Token token, JSONObject json) {
-        JSONObject body  = new JSONObject().put("token", token.token()).put("user", getUser(null, token));
+    private void sendAuthenticatedMessage(Request request, Client client, JSONObject json) {
+        JSONObject body  = new JSONObject().put("token", client.getToken().token()).put("user", client.getUserJson());
         JSONObject message = withIdActionBody(json, "authenticated", body);
         request.ctx.writeAndFlush(new TextWebSocketFrame(message.toString()));
     }

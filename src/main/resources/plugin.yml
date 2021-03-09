@@ -9,3 +9,5 @@ commands:
     description: "voiceconnectsmthidk"
   token:
     description: "token"
+  button:
+    description: "buton"

@@ -30,6 +30,14 @@ public class Token {
         tokenType = type;
     }
 
+    public Token(String uuid, String username, boolean type, String token) {
+        tokenString = token;
+        creationTime = System.currentTimeMillis();
+        usernameString = username;
+        uuidString = uuid;
+        tokenType = type;
+    }
+
     public String token() {return tokenString;}
     public long creation() {return creationTime;}
     public String username() {return usernameString;}
