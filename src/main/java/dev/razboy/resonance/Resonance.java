@@ -2,6 +2,7 @@ package dev.razboy.resonance;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import dev.razboy.resonance.command.ParseCommand;
 import dev.razboy.resonance.command.TokenCommand;
 import dev.razboy.resonance.config.ConfigManager;
 import dev.razboy.resonance.config.ConfigType;
@@ -64,7 +65,9 @@ public class Resonance extends JavaPlugin {
         serverTask = Bukkit.getScheduler().runTaskAsynchronously(this, server);
         getServer().getPluginManager().registerEvents(new MessageListener(webSocketRequestManager), this);
         Objects.requireNonNull(this.getCommand("token")).setExecutor(new TokenCommand());
+        Objects.requireNonNull(this.getCommand("minimessage")).setExecutor(new ParseCommand());
     }
+
     @Override public void onDisable() {
         server.stop();
         serverTask.cancel();
@@ -77,13 +80,16 @@ public class Resonance extends JavaPlugin {
 
 
 
-
     public static HttpRequestManager getHttpRequestManager() {
         return httpRequestManager;
     }
+
     public static WebSocketManager getWebSocketRequestManager() {return webSocketRequestManager;}
     public static void log(String message) {
         instance.getLogger().info(message);
     }
 
+    public static ConfigManager getConfigManager() {
+        return configManager;
+    }
 }

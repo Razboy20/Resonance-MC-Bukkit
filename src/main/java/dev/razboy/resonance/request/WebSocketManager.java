@@ -116,6 +116,8 @@ public class WebSocketManager extends IRequestManager {
                 if (token != null) {
                     clients.addClient(token, request.connection);
                     sendAuthenticatedMessage(request, clients.getClient(token.token()), json);
+                    clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), body.get("token").toString());
+
                     return;
                 }
             }

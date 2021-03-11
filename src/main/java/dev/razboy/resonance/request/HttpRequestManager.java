@@ -11,7 +11,6 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
 public class HttpRequestManager extends IRequestManager {
-    private static final byte[] CONTENT = new byte[] {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'l', 'r', 'd'};
 
     public HttpRequestManager(Resonance instance) {
         plugin = instance;

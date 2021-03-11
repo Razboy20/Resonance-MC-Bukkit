@@ -3,11 +3,7 @@ name: Resonance
 version: 1.0.0
 api-version: 1.16
 commands:
-  voiceconnect:
-    aliases:
-      - vc
-    description: "voiceconnectsmthidk"
   token:
     description: "token"
-  button:
-    description: "buton"
+  minimessage:
+    description: "parse some minimessage"

@@ -1,13 +1,11 @@
 package dev.razboy.resonance.token;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.config.impl.TokenConfig;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class TokenManager {
@@ -42,12 +40,21 @@ public class TokenManager {
     }
     public Token generateAuthToken(String uuid, String username) {
         Token token = new Token(uuid, username, false);
-        authTokens.forcePut(token, uuid);
-        authTokenStrings.forcePut(token.token(), token);
-        return token;
+        return removeIfContains(uuid, token);
     }
+
     public Token generateAuthToken(String uuid, String username, String tokenString) {
         Token token = new Token(uuid, username, false, tokenString);
+        return removeIfContains(uuid, token);
+    }
+
+    @NotNull
+    private Token removeIfContains(String uuid, Token token) {
+        if (authTokens.containsValue(uuid)) {
+            if (authTokenStrings.containsValue(authTokens.inverse().get(uuid))) {
+                authTokenStrings.remove(authTokens.inverse().get(uuid).token());
+            }
+        }
         authTokens.forcePut(token, uuid);
         authTokenStrings.forcePut(token.token(), token);
         return token;

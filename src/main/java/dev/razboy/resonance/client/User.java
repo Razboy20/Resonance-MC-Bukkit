@@ -58,4 +58,8 @@ public class User {
     public JSONObject getJson() {
         return info;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
 }

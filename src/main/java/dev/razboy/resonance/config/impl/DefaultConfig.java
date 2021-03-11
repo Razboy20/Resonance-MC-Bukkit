@@ -13,6 +13,7 @@ public class DefaultConfig extends Config {
         this.options().header("=== Resonance Config === #");
         this.addDefault("Domain", "localhost");
         this.addDefault("Secure", false);
+        this.addDefault("LoggedInMessage", "test");
         this.options().copyDefaults(true);
     }
 }
