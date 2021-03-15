@@ -1,11 +1,12 @@
 package dev.razboy.resonance.client;
 
-import dev.razboy.resonance.token.Token;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import dev.razboy.resonance.token.Token;
 
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ public class User {
     private boolean online;
     private Player player;
 
-    private final JSONObject info;
+    private JSONObject info;
 
     public User(Token token, Player player) {
         online = player != null;
@@ -36,23 +37,37 @@ public class User {
     }
 
     public boolean update() {
-        boolean updated;
-        player = Bukkit.getPlayer(UUID.fromString(token.uuid()));
-        boolean updatedOnline = player != null;
-        updated = updatedOnline != online;
-        info.put("online", online);
-        if (online) {
-            JSONObject pos = info.getJSONObject("pos");
-            Location location = player.getLocation();
-            updated = (pos.getJSONArray("rotation").getFloat(0) != location.getYaw())||(pos.getJSONArray("rotation").getFloat(1) != location.getPitch())||(pos.getInt("x") != location.getBlockX())||(pos.getInt("y") != location.getBlockY())||(pos.getInt("z") != location.getBlockZ());;
+        try {
+            boolean updated;
+            JSONObject newInfo = new JSONObject();
 
-            pos.put("x", location.getBlockX());
-            pos.put("y", location.getBlockY());
-            pos.put("z", location.getBlockZ());
+            player = Bukkit.getPlayer(UUID.fromString(token.uuid()));
+            boolean updatedOnline = player != null;
+            updated = updatedOnline != online;
 
-            pos.put("rotation", new JSONArray(new float[]{location.getYaw(), location.getPitch()}));
+            if (updated) {
+                online = updatedOnline;
+                newInfo.put("online", online);
+            }
+            if (online) {
+                JSONObject pos = info.getJSONObject("pos");
+                JSONObject newPos = new JSONObject();
+                JSONArray rot = pos.getJSONArray("rotation");
+                JSONArray newRot = new JSONArray();
+                Location location = player.getLocation();
+                newPos.put("x", location.getBlockX() != pos.getInt("x") ? location.getBlockX() : null);
+                newPos.put("y", location.getBlockY() != pos.getInt("y") ? location.getBlockY() : null);
+                newPos.put("z", location.getBlockZ() != pos.getInt("z") ? location.getBlockZ() : null);
+                newRot.put(0, location.getPitch() != rot.getFloat(0) ? location.getPitch() : rot.getFloat(0));
+                newRot.put(1, location.getYaw() != rot.getFloat(1) ? location.getYaw() : rot.getFloat(1));
+                newPos.put("rotation", newRot.isEmpty()?null:newRot);
+                newInfo.put("pos", newPos.isEmpty()?null:newPos);
+                updated = updated || newPos.has("x") || newPos.has("y") || newPos.has("z") || newRot.length() >= 1;
+            }
+            info = newInfo;
         }
-        return updated;
+        catch (Exception e) {}
+        return false;
     }
 
     public JSONObject getJson() {

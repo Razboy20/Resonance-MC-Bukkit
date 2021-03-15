@@ -46,6 +46,7 @@ public class WebSocketManager extends IRequestManager {
                 clients.sendAll(message);
             }
         }
+        sendQueue.clear();
         clients.update();
     }
 

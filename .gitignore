@@ -5,3 +5,4 @@ build/*
 .idea/codeStyles/codeStyleConfig.xml
 .idea/.name
 gradle/*
+.idea/compiler.xml
