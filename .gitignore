@@ -1,8 +1,4 @@
 build/*
 .gradle/*
-.idea/*
-.idea/gradle.xml
-.idea/codeStyles/codeStyleConfig.xml
-.idea/.name
 gradle/*
 .idea/compiler.xml

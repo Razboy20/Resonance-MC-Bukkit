@@ -6,6 +6,10 @@ import dev.razboy.resonance.client.Client;
 import dev.razboy.resonance.client.Clients;
 import dev.razboy.resonance.network.Connection;
 import dev.razboy.resonance.network.Request;
+import dev.razboy.resonance.packets.Packet;
+import dev.razboy.resonance.packets.clientbound.auth.AuthFailedPacket;
+import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
+import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
 import dev.razboy.resonance.token.Token;
 import dev.razboy.resonance.token.TokenManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -58,27 +62,9 @@ public class WebSocketManager extends IRequestManager {
         TextWebSocketFrame frame = request.webSocketFrame;
         String text = frame.text();
         try {
-            JSONObject json = new JSONObject(text);
-            if (!validateJson(json)) {
-                close(request);
-            }
-            String action = json.get("action").toString();
-            if (ACTIONS.contains(action)) {
-                switch (action.toLowerCase()) {
-                    case "authenticate":
-                        authTokenAuthenticate(request, json);
-                        break;
-                    case "logout":
-                        removeUser(request, json);
-                        break;
-                    case "user_info":
-                        tokenAuthenticate(request, json);
-                        break;
-                    default:
-                        break;
-
-
-                }
+            Packet packet = Packet.readPacket(text);
+            if (packet instanceof AuthTokenAuthenticatePacket) {
+                authTokenAuthenticate(request, packet);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -109,21 +95,24 @@ public class WebSocketManager extends IRequestManager {
     }
 
 
-    private void authTokenAuthenticate(Request request, JSONObject json) {
-        if (json.get("body") != null && json.get("body") instanceof JSONObject) {
-            JSONObject body = json.getJSONObject("body");
-            if (body.has("token")) {
-                Token token = Resonance.getTokenManager().validateAuthToken(body.get("token").toString());
+    private void authTokenAuthenticate(Request request, Packet p) {
+        AuthTokenAuthenticatePacket packet = (AuthTokenAuthenticatePacket) p;
+            if (packet.getAuthToken() != null) {
+                Token token = Resonance.getTokenManager().validateAuthToken(packet.getAuthToken());
                 if (token != null) {
-                    clients.addClient(token, request.connection);
-                    sendAuthenticatedMessage(request, clients.getClient(token.token()), json);
-                    clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), body.get("token").toString());
+                    Client client = clients.addClient(token, request.connection);
+
+                    AuthenticatedPacket authenticatedPacket = new AuthenticatedPacket();
+                    authenticatedPacket.setToken(client.getToken().token());
+                    authenticatedPacket.setUser(client.getUserJson());
+                    request.ctx.writeAndFlush(new TextWebSocketFrame(authenticatedPacket.read()));
+                    clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), packet.getAuthToken());
 
                     return;
                 }
             }
-        }
-        sendAuthFailedMessage(request, json);
+        request.ctx.writeAndFlush(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read()));
+
     }
 
     private void sendUserInfoMessage(Request request, Client client, JSONObject json) {
@@ -133,15 +122,8 @@ public class WebSocketManager extends IRequestManager {
     }
 
     private void sendAuthFailedMessage(Request request, JSONObject json) {
-        JSONObject message = withIdActionBody(json, "authentication_failed", new JSONObject());
-        request.ctx.writeAndFlush(new TextWebSocketFrame(message.toString()));
     }
 
-    private void sendAuthenticatedMessage(Request request, Client client, JSONObject json) {
-        JSONObject body  = new JSONObject().put("token", client.getToken().token()).put("user", client.getUserJson());
-        JSONObject message = withIdActionBody(json, "authenticated", body);
-        request.ctx.writeAndFlush(new TextWebSocketFrame(message.toString()));
-    }
 
     private JSONObject withIdActionBody(JSONObject json, String action, JSONObject body) {
         return addId(new JSONObject(), json).put("action", action).put("body", body);

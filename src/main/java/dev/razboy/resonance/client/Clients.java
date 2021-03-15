@@ -14,9 +14,11 @@ public class Clients {
 
     public Clients(){}
 
-    public void addClient(Token token, Connection connection) {
+    public Client addClient(Token token, Connection connection) {
         connections.forcePut(connection, token.token());
-        clients.forcePut(token.token(), new Client(connection, token));
+        Client client = new Client(connection, token);
+        clients.forcePut(token.token(), client);
+        return client;
     }
     public boolean hasClient(String token) {
         return connections.containsValue(token);
