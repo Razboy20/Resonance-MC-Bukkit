@@ -1,18 +1,22 @@
-package dev.razboy.resonance.packets.clientbound.auth;
+package dev.razboy.resonance.packets.clientbound.play;
 
 import dev.razboy.resonance.packets.PacketType;
 import dev.razboy.resonance.packets.clientbound.ClientBoundPacket;
 import org.json.JSONObject;
 
-public class AuthenticatedPacket extends ClientBoundPacket {
-    public final static PacketType id = PacketType.AUTHENTICATED;
+public class OUserInfoPacket extends ClientBoundPacket {
+    public final static PacketType id = PacketType.USER_INFO;
     public final static String action = id.action;
 
 
     private String token;
     private JSONObject user;
-
-
+    public void setToken(String token) {
+        this.token = token;
+    }
+    public void setUser(JSONObject user) {
+        this.user = user;
+    }
 
     @Override
     public String read() {
@@ -21,12 +25,5 @@ public class AuthenticatedPacket extends ClientBoundPacket {
                         .put("user", user)
                         .put("token", token)
                 ).toString();
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-    public void setUser(JSONObject user) {
-        this.user = user;
     }
 }

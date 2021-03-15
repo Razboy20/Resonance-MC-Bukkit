@@ -65,7 +65,7 @@ public class TokenConfig extends Config {
             this.set("Users", null);
 
             tokens.keySet().forEach((token) -> {
-                System.out.println(token.token() + token.uuid());
+                //System.out.println(token.token() + token.uuid());
                 this.set(TOKENS + token.token(), token.uuid());
                 this.set(USERS + token.uuid() + ".Token", token.token());
                 this.set(USERS + token.uuid() + ".Creation", token.creation());

@@ -2,6 +2,7 @@ package dev.razboy.resonance.client;
 
 import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.network.Connection;
+import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
 import dev.razboy.resonance.token.Token;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import net.kyori.adventure.text.Component;
@@ -49,9 +50,9 @@ public class Clients {
     }
     public void update() {
         clients.forEach((token, client) -> {
-            if (client.getUser().update()){
-                client.getConnection().getCtx().writeAndFlush(new TextWebSocketFrame(new JSONObject().put("action", "user_update").put("body", new JSONObject() .put("user", client.getUserJson())).toString()));
-            }
+            UserUpdatePacket userUpdatePacket = new UserUpdatePacket();
+            userUpdatePacket.setUser(client.getUser().update());
+            client.getConnection().getCtx().writeAndFlush(new TextWebSocketFrame(userUpdatePacket.read()));
         });
     }
 }

@@ -13,6 +13,9 @@ public abstract class ServerBoundPacket extends Packet {
         return false;
     }
 
+    @Override
+    public String read() {return null;}
+
     public abstract void readJson(JSONObject json) throws MalformedPacketException;
 
 

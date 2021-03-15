@@ -29,7 +29,7 @@ public class Connection extends SimpleChannelInboundHandler<Object> {
         if (obj instanceof TextWebSocketFrame) {
             TextWebSocketFrame frame = (TextWebSocketFrame) obj;
             String text = frame.retain().text();
-            System.out.println("(" + requests + ")/" + remote + ": " + (text.length()>50?text.substring(0,49):text));
+            //System.out.println("(" + requests + ")/" + remote + ": " + (text.length()>50?text.substring(0,49):text));
             Resonance.getWebSocketRequestManager().add(new Request(this, ctx, frame));
         } else if (obj instanceof FullHttpRequest) {
             FullHttpRequest request = (FullHttpRequest) obj;

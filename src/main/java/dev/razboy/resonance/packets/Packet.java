@@ -10,6 +10,7 @@ public abstract class Packet {
 
     protected Integer messageId;
 
+
     public abstract String read();
 
     public int getId() {return id.id;}

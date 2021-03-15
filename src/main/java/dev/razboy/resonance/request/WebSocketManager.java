@@ -1,15 +1,16 @@
 package dev.razboy.resonance.request;
 
-import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.client.Client;
 import dev.razboy.resonance.client.Clients;
-import dev.razboy.resonance.network.Connection;
 import dev.razboy.resonance.network.Request;
 import dev.razboy.resonance.packets.Packet;
 import dev.razboy.resonance.packets.clientbound.auth.AuthFailedPacket;
 import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
+import dev.razboy.resonance.packets.clientbound.play.OUserInfoPacket;
 import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
+import dev.razboy.resonance.packets.serverbound.auth.LogoutPacket;
+import dev.razboy.resonance.packets.serverbound.play.UserInfoPacket;
 import dev.razboy.resonance.token.Token;
 import dev.razboy.resonance.token.TokenManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -51,7 +52,7 @@ public class WebSocketManager extends IRequestManager {
             }
         }
         sendQueue.clear();
-        clients.update();
+        //clients.update();
     }
 
     @Override
@@ -65,6 +66,10 @@ public class WebSocketManager extends IRequestManager {
             Packet packet = Packet.readPacket(text);
             if (packet instanceof AuthTokenAuthenticatePacket) {
                 authTokenAuthenticate(request, packet);
+            } else if (packet instanceof LogoutPacket) {
+                logoutUser(request, packet);
+            } else if (packet instanceof UserInfoPacket) {
+                tokenAuthenticate(request, packet);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -73,25 +78,30 @@ public class WebSocketManager extends IRequestManager {
         }
     }
 
-    private void removeUser(Request request, JSONObject json) {
+    private void logoutUser(Request request, Packet packet) {
         if (clients.hasClient(request.connection)) {
             clients.removeClient(request.connection);
         }
     }
 
-    private void tokenAuthenticate(Request request, JSONObject json) {
-        if (json.has("bearer")) {
-            String bearer = json.get("bearer").toString();
-            TokenManager tokenManager = Resonance.getTokenManager();
-            Token token = tokenManager.validateToken(bearer);
-            if (token != null) {
-                clients.addClient(token, request.connection);
-                sendUserInfoMessage(request, clients.getClient(token.token()), json);
-                return;
-            }
+    private void tokenAuthenticate(Request request, Packet p) {
+        UserInfoPacket packet = (UserInfoPacket) p;
 
+        String bearer = packet.getToken();
+        TokenManager tokenManager = Resonance.getTokenManager();
+        Token token = tokenManager.validateToken(bearer);
+        if (token != null) {
+            Client client = clients.addClient(token, request.connection);
+            OUserInfoPacket userInfoPacket = new OUserInfoPacket();
+            userInfoPacket.setMessageId(packet.getMessageId());
+            userInfoPacket.setToken(token.token());
+            userInfoPacket.setUser(client.getUserJson());
+            //System.out.println(userInfoPacket.read());
+            request.ctx.writeAndFlush(new TextWebSocketFrame(userInfoPacket.read()));
+            return;
         }
-        sendAuthFailedMessage(request, json);
+
+        request.ctx.writeAndFlush(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read()));
     }
 
 
@@ -103,6 +113,7 @@ public class WebSocketManager extends IRequestManager {
                     Client client = clients.addClient(token, request.connection);
 
                     AuthenticatedPacket authenticatedPacket = new AuthenticatedPacket();
+                    authenticatedPacket.setMessageId(packet.getMessageId());
                     authenticatedPacket.setToken(client.getToken().token());
                     authenticatedPacket.setUser(client.getUserJson());
                     request.ctx.writeAndFlush(new TextWebSocketFrame(authenticatedPacket.read()));

@@ -7,17 +7,12 @@ import org.json.JSONObject;
 
 public class AuthTokenAuthenticatePacket extends ServerBoundPacket {
     public final static PacketType id = PacketType.AUTHENTICATE;
-    public final static String action = "authenticate";
+    public final static String action = id.action;
 
     private String authToken;
 
     public String getAuthToken() {
         return authToken;
-    }
-
-    @Override
-    public String read() {
-        return null;
     }
 
     @Override
