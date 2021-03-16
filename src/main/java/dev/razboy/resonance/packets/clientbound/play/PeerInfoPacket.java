@@ -7,20 +7,20 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class PeerUpdatePacket extends ClientBoundPacket {
+public class PeerInfoPacket extends ClientBoundPacket {
     @Override
     protected PacketType setPacketType() {
-        return PacketType.PEER_UPDATE;
+        return PacketType.PEER_INFO;
     }
 
-
-    private ArrayList<JSONObject> peers = new ArrayList<>();
+    private final ArrayList<JSONObject> peers = new ArrayList<>();
 
     public void addPeer(JSONObject peer) {
         peers.add(peer);
     }
 
     @Override
-    public String read() { return withIdActionBody(new JSONObject().put("peers", new JSONArray(peers))).toString();
+    public String read() {
+        return withIdActionBody(new JSONObject().put("peers", new JSONArray(peers))).toString();
     }
 }

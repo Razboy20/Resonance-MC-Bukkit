@@ -9,9 +9,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 abstract class IRequestManager implements Runnable {
     protected boolean looping = true;
     protected static Resonance plugin;
-    protected ConcurrentLinkedQueue<Request> queue = new ConcurrentLinkedQueue<>();
+    protected ConcurrentLinkedQueue<Request> incomingQueue = new ConcurrentLinkedQueue<>();
+    protected ConcurrentLinkedQueue<Request> outgoingQueue = new ConcurrentLinkedQueue<>();
 
-    protected abstract void handle(Request request);
+    protected abstract void handleIncoming(Request request);
+    protected abstract void handleOutgoing(Request request);
     protected void additional() {}
 
 
@@ -21,19 +23,32 @@ abstract class IRequestManager implements Runnable {
     }
 
 
-    public void add(Request request) {
-        queue.add(Objects.requireNonNull(request));
+    public void addIncoming(Request request) {
+        incomingQueue.add(Objects.requireNonNull(request));
+    }
+    public void addOutgoing(Request request) {
+        outgoingQueue.add(Objects.requireNonNull(request));
     }
 
     @Override
     public void run() {
         if (looping) {
-            for (Request request : queue) {
-                if (request != null) {
-                    handle(request);
+            if (!incomingQueue.isEmpty()) {
+                for (Request request : incomingQueue) {
+                    if (request != null) {
+                        handleIncoming(request);
+                    }
                 }
+                incomingQueue.clear();
             }
-            queue.clear();
+            if (!outgoingQueue.isEmpty()) {
+                for (Request request : outgoingQueue) {
+                    if (request != null) {
+                        handleIncoming(request);
+                    }
+                }
+                outgoingQueue.clear();
+            }
             additional();
         }
     }

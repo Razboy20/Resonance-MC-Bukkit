@@ -26,12 +26,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class WebSocketManager extends IRequestManager {
+public class SyncReqManager extends IRequestManager {
     private final Resonance plugin;
     private static final List<String> ACTIONS = Arrays.asList("authenticate", "logout", "user_info");
     private final Clients clients = new Clients();
     private final ConcurrentLinkedQueue<Component> sendQueue = new ConcurrentLinkedQueue<>();
-    public WebSocketManager(Resonance instance) {
+    public SyncReqManager(Resonance instance) {
         plugin = instance;
     }
 
@@ -56,7 +56,7 @@ public class WebSocketManager extends IRequestManager {
     }
 
     @Override
-    public void handle(Request request) {
+    public void handleIncoming(Request request) {
         if (request.webSocketFrame == null) {
             return;
         }
@@ -78,6 +78,11 @@ public class WebSocketManager extends IRequestManager {
         }
     }
 
+    @Override
+    protected void handleOutgoing(Request request) {
+
+    }
+
     private void logoutUser(Request request, Packet packet) {
         if (clients.hasClient(request.connection)) {
             clients.removeClient(request.connection);
@@ -97,11 +102,11 @@ public class WebSocketManager extends IRequestManager {
             userInfoPacket.setToken(token.token());
             userInfoPacket.setUser(client.getUserJson());
             //System.out.println(userInfoPacket.read());
-            request.ctx.writeAndFlush(new TextWebSocketFrame(userInfoPacket.read()));
+            Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(userInfoPacket.read())));
             return;
         }
 
-        request.ctx.writeAndFlush(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read()));
+        Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read())));
     }
 
 
@@ -116,20 +121,20 @@ public class WebSocketManager extends IRequestManager {
                     authenticatedPacket.setMessageId(packet.getMessageId());
                     authenticatedPacket.setToken(client.getToken().token());
                     authenticatedPacket.setUser(client.getUserJson());
-                    request.ctx.writeAndFlush(new TextWebSocketFrame(authenticatedPacket.read()));
+                    Resonance.getWebSocketRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(authenticatedPacket.read())));
                     clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), packet.getAuthToken());
 
                     return;
                 }
             }
-        request.ctx.writeAndFlush(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read()));
+        Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read())));
 
     }
 
     private void sendUserInfoMessage(Request request, Client client, JSONObject json) {
         JSONObject body = new JSONObject().put("token", client.getToken().token()).put("user", client.getUserJson());
         JSONObject message = withIdActionBody(json, "user_info", body);
-        request.ctx.writeAndFlush(new TextWebSocketFrame(message.toString()));
+        Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(message.toString())));
     }
 
     private void sendAuthFailedMessage(Request request, JSONObject json) {

@@ -3,11 +3,12 @@ package dev.razboy.resonance.network;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 
 public class Request {
     public final Connection connection;
-    public final FullHttpRequest fullHttpRequest;
-    public final TextWebSocketFrame webSocketFrame;
+    public FullHttpRequest fullHttpRequest;
+    public TextWebSocketFrame webSocketFrame;
     public final ChannelHandlerContext ctx;
 
     public Request(Connection connection, ChannelHandlerContext ctx, TextWebSocketFrame webSocketFrame) {
@@ -21,6 +22,14 @@ public class Request {
         this.ctx = ctx;
         this.webSocketFrame = null;
         this.fullHttpRequest = fullHttpRequest;
+    }
+    public Request setFullHttpRequest(FullHttpRequest r) {
+        fullHttpRequest = r;
+        return this;
+    }
+    public Request setWebSocketFrame(TextWebSocketFrame f) {
+        webSocketFrame = f;
+        return this;
     }
 
 }

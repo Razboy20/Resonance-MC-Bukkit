@@ -15,6 +15,9 @@ public enum PacketType {
     USER_INFO(0x04, "user_info"),
     USER_UPDATE(0x05, "user_update"),
     PEER_UPDATE(0x06, "peer_update"),
+    PEER_INFO(0x07, "peer_info"),
+    PEER_CONNECT(0x08, "peer_connect"),
+    PEER_DISCONNECT(0x09, "peer_disconnect"),
     LOGOUT(0xFF, "logout"),
     AUTH_FAILED(0x03, "auth_failed");
     public final int id;

@@ -1,14 +1,10 @@
 package dev.razboy.resonance.network;
 
 import dev.razboy.resonance.Resonance;
-import dev.razboy.resonance.request.HttpRequestManager;
-import io.netty.buffer.Unpooled;
+import dev.razboy.resonance.request.AsyncReqManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 public class Connection extends SimpleChannelInboundHandler<Object> {
@@ -24,20 +20,22 @@ public class Connection extends SimpleChannelInboundHandler<Object> {
 
 
         if (remote.isEmpty() && obj instanceof FullHttpRequest) {
-            remote = HttpRequestManager.getRemoteAddress(ctx, (FullHttpRequest) obj);
+            remote = AsyncReqManager.getRemoteAddress(ctx, (FullHttpRequest) obj);
         }
+
         if (obj instanceof TextWebSocketFrame) {
             TextWebSocketFrame frame = (TextWebSocketFrame) obj;
             String text = frame.retain().text();
             //System.out.println("(" + requests + ")/" + remote + ": " + (text.length()>50?text.substring(0,49):text));
-            Resonance.getWebSocketRequestManager().add(new Request(this, ctx, frame));
+            Resonance.getWebSocketRequestManager().addIncoming(new Request(this, ctx, frame));
         } else if (obj instanceof FullHttpRequest) {
             FullHttpRequest request = (FullHttpRequest) obj;
             String uri = request.uri();
-            System.out.println("(" + requests + ")/" + remote + ": " + (uri.length()>50?uri.substring(0,49):uri));
-            Resonance.getHttpRequestManager().add(new Request(this, ctx, request));
-            if (!HttpRequestManager.upgrade(ctx, request)) {
-                HttpRequestManager.writeTemplateResponse(ctx, remote, request);
+            System.out.println("(" + requests + ")/" + remote + ": " + request.headers().toString());
+            //System.out.println("(" + requests + ")/" + remote + ": " + (uri.length()>50?uri.substring(0,49):uri));
+            if (!AsyncReqManager.upgrade(ctx, request)) {
+                Resonance.getHttpRequestManager().addIncoming(new Request(this, ctx, request));
+                AsyncReqManager.writeTemplateResponse(ctx, remote, request);
             } else {
                 websocketConnection = true;
             }
@@ -54,7 +52,7 @@ public class Connection extends SimpleChannelInboundHandler<Object> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if (websocketConnection) {
-            Resonance.getWebSocketRequestManager().add(new Request(this, ctx, new TextWebSocketFrame("{\"action\":\"logout\"}")));
+            Resonance.getWebSocketRequestManager().addIncoming(new Request(this, ctx, new TextWebSocketFrame("{\"action\":\"logout\"}")));
         }
     }
 
