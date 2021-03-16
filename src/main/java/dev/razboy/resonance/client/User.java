@@ -39,12 +39,15 @@ public class User {
     public JSONObject update() {
         try {
             boolean updated;
-            JSONObject newInfo = new JSONObject();
+            JSONObject newInfo = new JSONObject(info, JSONObject.getNames(info));
 
             player = Bukkit.getPlayer(UUID.fromString(token.uuid()));
             boolean online = player != null;
-            newInfo.put("online", online); info.put("online", online);
             if (online) {
+                newInfo.put("data", new JSONObject()
+                        .put("uuid", token.uuid())
+                        .put("username", token.username())
+                );
                 Location location = player.getLocation();
                 JSONObject pos = new JSONObject(info.getJSONObject("pos"), JSONObject.getNames(info.getJSONObject("pos")));
                 if (pos.getDouble("x") != round(location.getX())) {
@@ -63,8 +66,8 @@ public class User {
             }
             info = newInfo;
         }
-        catch (Exception e) {}
-        return info;
+        catch (Exception ignored) {}
+        return getJson();
     }
     private double round(double n) {
         return Math.round(n*100.0)/100.0;

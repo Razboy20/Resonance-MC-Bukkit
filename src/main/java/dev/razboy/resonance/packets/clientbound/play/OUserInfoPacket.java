@@ -5,8 +5,10 @@ import dev.razboy.resonance.packets.clientbound.ClientBoundPacket;
 import org.json.JSONObject;
 
 public class OUserInfoPacket extends ClientBoundPacket {
-    public final static PacketType id = PacketType.USER_INFO;
-    public final static String action = id.action;
+    @Override
+    protected PacketType setPacketType() {
+        return PacketType.USER_INFO;
+    }
 
 
     private String token;
@@ -20,10 +22,9 @@ public class OUserInfoPacket extends ClientBoundPacket {
 
     @Override
     public String read() {
-        return withId().put("action", action)
-                .put("body", new JSONObject()
-                        .put("user", user)
-                        .put("token", token)
+        return withIdActionBody(new JSONObject()
+                //put("token", token)
+                .put("user", user)
                 ).toString();
     }
 }

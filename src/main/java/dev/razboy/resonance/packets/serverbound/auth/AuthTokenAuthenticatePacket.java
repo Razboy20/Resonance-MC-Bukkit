@@ -6,8 +6,10 @@ import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import org.json.JSONObject;
 
 public class AuthTokenAuthenticatePacket extends ServerBoundPacket {
-    public final static PacketType id = PacketType.AUTHENTICATE;
-    public final static String action = id.action;
+    @Override
+    protected PacketType setPacketType() {
+        return PacketType.AUTHENTICATE;
+    }
 
     private String authToken;
 

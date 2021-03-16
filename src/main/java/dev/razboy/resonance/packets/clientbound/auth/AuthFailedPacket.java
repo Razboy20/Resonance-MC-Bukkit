@@ -5,11 +5,13 @@ import dev.razboy.resonance.packets.clientbound.ClientBoundPacket;
 import org.json.JSONObject;
 
 public class AuthFailedPacket extends ClientBoundPacket {
-    public final static PacketType id = PacketType.AUTH_FAILED;
-    public final static String action = id.action;
+    @Override
+    protected PacketType setPacketType() {
+        return PacketType.AUTH_FAILED;
+    }
 
     @Override
     public String read() {
-        return withId().put("action", action).toString();
+        return withIdAction().toString();
     }
 }

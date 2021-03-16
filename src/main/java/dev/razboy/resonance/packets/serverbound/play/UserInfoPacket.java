@@ -6,8 +6,10 @@ import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import org.json.JSONObject;
 
 public class UserInfoPacket extends ServerBoundPacket {
-    public final static PacketType id = PacketType.AUTHENTICATE;
-    public final static String action = "authenticate";
+    @Override
+    protected PacketType setPacketType() {
+        return PacketType.USER_INFO;
+    }
 
     private String token;
     public String getToken() {

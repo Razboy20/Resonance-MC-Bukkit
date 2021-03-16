@@ -52,7 +52,7 @@ public class WebSocketManager extends IRequestManager {
             }
         }
         sendQueue.clear();
-        //clients.update();
+        clients.update();
     }
 
     @Override

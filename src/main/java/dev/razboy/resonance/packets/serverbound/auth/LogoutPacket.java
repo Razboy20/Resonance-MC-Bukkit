@@ -6,8 +6,10 @@ import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import org.json.JSONObject;
 
 public class LogoutPacket extends ServerBoundPacket {
-    private final static PacketType id = PacketType.LOGOUT;
-    private final static String action = id.action;
+    @Override
+    protected PacketType setPacketType() {
+        return PacketType.LOGOUT;
+    }
 
     @Override
     public void readJson(JSONObject json) throws MalformedPacketException {

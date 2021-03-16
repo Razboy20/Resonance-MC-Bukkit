@@ -2,11 +2,14 @@ package dev.razboy.resonance.client;
 
 import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.network.Connection;
+import dev.razboy.resonance.packets.clientbound.play.PeerUpdatePacket;
 import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
 import dev.razboy.resonance.token.Token;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import net.kyori.adventure.text.Component;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class Clients {
     private final HashBiMap<Connection, String> connections = HashBiMap.create();
@@ -49,10 +52,23 @@ public class Clients {
                 });
     }
     public void update() {
+        HashMap<Client, JSONObject> clientInfo = new HashMap<>();
         clients.forEach((token, client) -> {
             UserUpdatePacket userUpdatePacket = new UserUpdatePacket();
-            userUpdatePacket.setUser(client.getUser().update());
+            clientInfo.put(client, client.getUser().update());
+            userUpdatePacket.setUser(clientInfo.get(client));
             client.getConnection().getCtx().writeAndFlush(new TextWebSocketFrame(userUpdatePacket.read()));
         });
+        /*
+        clientInfo.keySet().forEach((client -> {
+            clientInfo.keySet().forEach((peer -> {
+                PeerUpdatePacket packet = new PeerUpdatePacket();
+                if (peer != client) {
+                    packet.addPeer(clientInfo.get(peer));
+                }
+                peer.getConnection().getCtx().writeAndFlush(new TextWebSocketFrame(packet.read()));
+            }));
+        }));
+        */
     }
 }

@@ -1,19 +1,21 @@
 package dev.razboy.resonance.packets;
 
-import dev.razboy.resonance.packets.clientbound.ClientBoundPacket;
 import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public abstract class Packet {
-    PacketType id = PacketType.INVALID;
-
+    protected PacketType packetType = PacketType.INVALID;
     protected Integer messageId;
 
+    protected abstract PacketType setPacketType();
+
+    public Packet() {
+        packetType = setPacketType();
+    }
 
     public abstract String read();
 
-    public int getId() {return id.id;}
+    public int getId() {return packetType.id;}
     boolean isServerBound() {return false;}
     boolean isClientBound() {return false;}
 
@@ -56,6 +58,14 @@ public abstract class Packet {
 
         return json;
     }
+    protected JSONObject withIdAction() {
+        return withId().put("action", packetType.action);
+    }
+
+    protected JSONObject withIdActionBody(JSONObject body) {
+        return withIdAction().put("body", body);
+    }
+
     public Packet setMessageId(Integer id) {
         messageId = id;
         return this;
