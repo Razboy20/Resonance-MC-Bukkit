@@ -20,6 +20,11 @@ public class PeerInfoPacket extends ClientBoundPacket {
     }
 
     @Override
+    public String repr() {
+        return getClass().getSimpleName() + "(peers=" + peers.toString() + ")";
+    }
+
+    @Override
     public String read() {
         return withIdActionBody(new JSONObject().put("peers", new JSONArray(peers))).toString();
     }

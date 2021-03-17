@@ -3,6 +3,9 @@ package dev.razboy.resonance.packets;
 import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import org.json.JSONObject;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 public abstract class Packet {
     protected PacketType packetType = PacketType.INVALID;
     protected Integer messageId;
@@ -73,4 +76,6 @@ public abstract class Packet {
     public Integer getMessageId() {
         return messageId;
     }
+
+    public abstract String repr();
 }

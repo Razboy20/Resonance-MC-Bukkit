@@ -1,7 +1,7 @@
 package dev.razboy.resonance.network;
 
 import dev.razboy.resonance.Resonance;
-import dev.razboy.resonance.request.AsyncReqManager;
+import dev.razboy.resonance.util.HttpTools;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -20,22 +20,21 @@ public class Connection extends SimpleChannelInboundHandler<Object> {
 
 
         if (remote.isEmpty() && obj instanceof FullHttpRequest) {
-            remote = AsyncReqManager.getRemoteAddress(ctx, (FullHttpRequest) obj);
+            remote = HttpTools.getRemoteAddress(ctx, (FullHttpRequest) obj);
         }
 
         if (obj instanceof TextWebSocketFrame) {
             TextWebSocketFrame frame = (TextWebSocketFrame) obj;
             String text = frame.retain().text();
-            //System.out.println("(" + requests + ")/" + remote + ": " + (text.length()>50?text.substring(0,49):text));
             Resonance.getWebSocketRequestManager().addIncoming(new Request(this, ctx, frame));
         } else if (obj instanceof FullHttpRequest) {
             FullHttpRequest request = (FullHttpRequest) obj;
             String uri = request.uri();
-            System.out.println("(" + requests + ")/" + remote + ": " + request.headers().toString());
+            System.out.println("(" + requests + ")/" + remote + ": " + request.uri());
             //System.out.println("(" + requests + ")/" + remote + ": " + (uri.length()>50?uri.substring(0,49):uri));
-            if (!AsyncReqManager.upgrade(ctx, request)) {
+            if (!HttpTools.upgrade(ctx, request)) {
                 Resonance.getHttpRequestManager().addIncoming(new Request(this, ctx, request));
-                AsyncReqManager.writeTemplateResponse(ctx, remote, request);
+                HttpTools.writeTemplateResponse(ctx, remote, request);
             } else {
                 websocketConnection = true;
             }

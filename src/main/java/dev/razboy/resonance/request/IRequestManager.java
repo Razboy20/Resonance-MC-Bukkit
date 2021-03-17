@@ -32,24 +32,27 @@ abstract class IRequestManager implements Runnable {
 
     @Override
     public void run() {
-        if (looping) {
-            if (!incomingQueue.isEmpty()) {
-                for (Request request : incomingQueue) {
-                    if (request != null) {
-                        handleIncoming(request);
+        try {
+            if (looping) {
+                if (!incomingQueue.isEmpty()) {
+                    for (Request request : incomingQueue) {
+                        if (request != null) {
+                            handleIncoming(request);
+                        }
                     }
+                    incomingQueue.clear();
                 }
-                incomingQueue.clear();
-            }
-            if (!outgoingQueue.isEmpty()) {
                 for (Request request : outgoingQueue) {
-                    if (request != null) {
-                        handleIncoming(request);
-                    }
+                    //System.out.println("o: " + request);
+                    System.out.println("Packet Pre: " + request.packet.repr());
+                    handleOutgoing(request);
                 }
                 outgoingQueue.clear();
+                additional();
             }
-            additional();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 }

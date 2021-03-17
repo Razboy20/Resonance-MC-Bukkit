@@ -8,6 +8,10 @@ public class PeerDisconnectPacket extends ClientBoundPacket {
     protected PacketType setPacketType() {
         return PacketType.PEER_DISCONNECT;
     }
+    @Override
+    public String repr() {
+        return getClass().getSimpleName() + "()";
+    }
 
     @Override
     public String read() {

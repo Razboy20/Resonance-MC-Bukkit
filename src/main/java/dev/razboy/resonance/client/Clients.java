@@ -1,7 +1,9 @@
 package dev.razboy.resonance.client;
 
 import com.google.common.collect.HashBiMap;
+import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.network.Connection;
+import dev.razboy.resonance.network.Request;
 import dev.razboy.resonance.packets.clientbound.play.PeerUpdatePacket;
 import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
 import dev.razboy.resonance.token.Token;
@@ -45,11 +47,13 @@ public class Clients {
     }
 
     public void sendAll(Component message) {
+        /*
         String json = new JSONObject().put("action", "message").put("message", message).toString();
         connections.forEach(
                 (connection, token) -> {
                     connection.getCtx().writeAndFlush(new TextWebSocketFrame(json));
                 });
+         **/
     }
     public void update() {
         HashMap<Client, JSONObject> clientInfo = new HashMap<>();
@@ -57,7 +61,7 @@ public class Clients {
             UserUpdatePacket userUpdatePacket = new UserUpdatePacket();
             clientInfo.put(client, client.getUser().update());
             userUpdatePacket.setUser(clientInfo.get(client));
-            client.getConnection().getCtx().writeAndFlush(new TextWebSocketFrame(userUpdatePacket.read()));
+            Resonance.getHttpRequestManager().addOutgoing(new Request(client.getConnection(), userUpdatePacket));
         });
         /*
         clientInfo.keySet().forEach((client -> {

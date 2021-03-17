@@ -10,6 +10,10 @@ public class LogoutPacket extends ServerBoundPacket {
     protected PacketType setPacketType() {
         return PacketType.LOGOUT;
     }
+    @Override
+    public String repr() {
+        return getClass().getSimpleName() + "()";
+    }
 
     @Override
     public void readJson(JSONObject json) throws MalformedPacketException {

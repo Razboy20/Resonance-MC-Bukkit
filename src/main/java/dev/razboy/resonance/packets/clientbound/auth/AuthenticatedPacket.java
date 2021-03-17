@@ -23,6 +23,11 @@ public class AuthenticatedPacket extends ClientBoundPacket {
                 .put("token", token)).toString();
     }
 
+    @Override
+    public String repr() {
+        return getClass().getSimpleName() + "(token=" + token + ", user=" + user.toString() + ")";
+    }
+
     public void setToken(String token) {
         this.token = token;
     }

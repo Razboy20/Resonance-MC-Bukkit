@@ -21,6 +21,12 @@ public class OUserInfoPacket extends ClientBoundPacket {
     }
 
     @Override
+    public String repr() {
+        return getClass().getSimpleName() + "(token=" + token + ", user=" + user.toString() + ")";
+    }
+
+
+    @Override
     public String read() {
         return withIdActionBody(new JSONObject()
                 //put("token", token)

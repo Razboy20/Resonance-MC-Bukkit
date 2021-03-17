@@ -8,6 +8,7 @@ import dev.razboy.resonance.packets.Packet;
 import dev.razboy.resonance.packets.clientbound.auth.AuthFailedPacket;
 import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
 import dev.razboy.resonance.packets.clientbound.play.OUserInfoPacket;
+import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.LogoutPacket;
 import dev.razboy.resonance.packets.serverbound.play.UserInfoPacket;
@@ -60,16 +61,17 @@ public class SyncReqManager extends IRequestManager {
         if (request.webSocketFrame == null) {
             return;
         }
-        TextWebSocketFrame frame = request.webSocketFrame;
-        String text = frame.text();
         try {
-            Packet packet = Packet.readPacket(text);
-            if (packet instanceof AuthTokenAuthenticatePacket) {
-                authTokenAuthenticate(request, packet);
-            } else if (packet instanceof LogoutPacket) {
-                logoutUser(request, packet);
-            } else if (packet instanceof UserInfoPacket) {
-                tokenAuthenticate(request, packet);
+            Packet packet = request.packet;
+            if (packet instanceof ServerBoundPacket) {
+                System.out.println(packet.repr());
+                if (packet instanceof AuthTokenAuthenticatePacket) {
+                    authTokenAuthenticate(request, packet);
+                } else if (packet instanceof LogoutPacket) {
+                    logoutUser(request, packet);
+                } else if (packet instanceof UserInfoPacket) {
+                    tokenAuthenticate(request, packet);
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -101,12 +103,12 @@ public class SyncReqManager extends IRequestManager {
             userInfoPacket.setMessageId(packet.getMessageId());
             userInfoPacket.setToken(token.token());
             userInfoPacket.setUser(client.getUserJson());
-            //System.out.println(userInfoPacket.read());
-            Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(userInfoPacket.read())));
+            System.out.println(userInfoPacket.repr());
+            Resonance.getHttpRequestManager().addOutgoing(request.setPacket(userInfoPacket));
             return;
         }
 
-        Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read())));
+        Resonance.getHttpRequestManager().addOutgoing(request.setPacket(new AuthFailedPacket().setMessageId(packet.getMessageId())));
     }
 
 
@@ -121,62 +123,17 @@ public class SyncReqManager extends IRequestManager {
                     authenticatedPacket.setMessageId(packet.getMessageId());
                     authenticatedPacket.setToken(client.getToken().token());
                     authenticatedPacket.setUser(client.getUserJson());
-                    Resonance.getWebSocketRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(authenticatedPacket.read())));
+                    System.out.println(request.setPacket(authenticatedPacket).packet.repr());
+                    Resonance.getWebSocketRequestManager().addOutgoing(request.setPacket(authenticatedPacket));
                     clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), packet.getAuthToken());
 
                     return;
                 }
             }
-        Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(new AuthFailedPacket().setMessageId(packet.getMessageId()).read())));
+        Resonance.getHttpRequestManager().addOutgoing(request.setPacket(new AuthFailedPacket().setMessageId(packet.getMessageId())));
 
     }
 
-    private void sendUserInfoMessage(Request request, Client client, JSONObject json) {
-        JSONObject body = new JSONObject().put("token", client.getToken().token()).put("user", client.getUserJson());
-        JSONObject message = withIdActionBody(json, "user_info", body);
-        Resonance.getHttpRequestManager().addOutgoing(request.setWebSocketFrame(new TextWebSocketFrame(message.toString())));
-    }
-
-    private void sendAuthFailedMessage(Request request, JSONObject json) {
-    }
-
-
-    private JSONObject withIdActionBody(JSONObject json, String action, JSONObject body) {
-        return addId(new JSONObject(), json).put("action", action).put("body", body);
-    }
-
-    private JSONObject addId(JSONObject message, JSONObject json) {
-        if (json.has("id")) {
-            try {
-                message.put("id", json.getInt("id"));
-            } catch (Exception ignored){}
-        }
-        return message;
-    }
-
-    private JSONObject getUser(Player player, Token token) {
-        JSONObject user = new JSONObject();
-        user.put("pos", new JSONObject()
-                .put("x", 0)
-                .put("y", 0)
-                .put("z", 0)
-                .put("rotation", new JSONArray(new float[]{90,0}))
-        )
-        .put("online", true)
-        .put("data", new JSONObject()
-                .put("uuid", token.uuid())
-                .put("username", token.username())
-        );
-        return user;
-    }
-
-    private boolean validateJson(JSONObject json) {
-        boolean body = true;
-        if (json.has("body")) {
-            body = json.get("body") instanceof JSONObject;
-        }
-        return json.has("action") && body;
-    }
     public void send(Component message) {
         sendQueue.add(message);
     }

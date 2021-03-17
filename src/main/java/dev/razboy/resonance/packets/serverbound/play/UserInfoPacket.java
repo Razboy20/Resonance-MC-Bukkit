@@ -16,6 +16,12 @@ public class UserInfoPacket extends ServerBoundPacket {
         return token;
     }
 
+
+    @Override
+    public String repr() {
+        return getClass().getSimpleName() + "(token=" + token + ")";
+    }
+
     @Override
     public void readJson(JSONObject json) throws MalformedPacketException {
         if (json.has("bearer")) {

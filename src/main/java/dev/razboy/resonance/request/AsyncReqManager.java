@@ -2,13 +2,11 @@ package dev.razboy.resonance.request;
 
 import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.network.Request;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
+import dev.razboy.resonance.packets.clientbound.ClientBoundPacket;
+import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
+import dev.razboy.resonance.util.HttpTools;
 import io.netty.handler.codec.http.*;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
-import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 public class AsyncReqManager extends IRequestManager {
 
@@ -26,69 +24,23 @@ public class AsyncReqManager extends IRequestManager {
             return;
         }
         FullHttpRequest req = request.fullHttpRequest;
-        writeTemplateResponse(request.ctx, request.connection.getRemote(), req);
+        HttpTools.writeTemplateResponse(request.ctx, request.connection.getRemote(), req);
     }
 
     @Override
     protected void handleOutgoing(Request request) {
-        if (request.webSocketFrame != null) {
-            request.ctx.writeAndFlush(request.webSocketFrame);
+        System.out.println("Packet Post: " + request.packet.repr());
+        if (request.packet != null) {
+            //System.out.println("Ows: " + request.webSocketFrame.retain().text());
+            request.ctx.writeAndFlush(new TextWebSocketFrame(request.packet.read()));
+            return;
+        } else if (request.fullHttpRequest != null) {
+            //System.out.println("Ohttp: " + request.fullHttpRequest.retain().uri());
+            request.ctx.writeAndFlush(request.fullHttpRequest);
             return;
         }
-        if (request.fullHttpRequest != null) {
-            request.ctx.writeAndFlush(request.fullHttpRequest);
-        }
+        System.out.println("Invalid R");
     }
 
 
-    public static boolean upgrade(ChannelHandlerContext ctx, FullHttpRequest request) {
-        if (request.headers().get("Connection") == null || request.headers().get("Upgrade") == null) {
-            return false;
-        }
-        if (request.headers().get("Connection").equalsIgnoreCase("upgrade") && request.headers().get("Upgrade").equalsIgnoreCase("websocket")) {
-            WebSocketServerHandshakerFactory factory = new WebSocketServerHandshakerFactory("ws://thiccaxe.net/", null, true);
-            WebSocketServerHandshaker handshaker = factory.newHandshaker(request);
-            if (handshaker == null) {
-                WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
-                return false;
-            }
-            handshaker.handshake(ctx.channel(), request);
-
-            return true;
-
-        }
-        return false;
-    }
-
-
-
-    public static String getRemoteAddress(ChannelHandlerContext ctx, FullHttpRequest request) {
-        HttpHeaders headers = request.headers();
-        String ip = headers.get("X-Forwarded-For");
-        if (ip != null) {return ip;}
-        return ctx.channel().remoteAddress().toString();
-    }
-
-    public static void writeTemplateResponse(ChannelHandlerContext ctx, String remote, FullHttpRequest request) {
-        boolean keepAlive = HttpUtil.isKeepAlive(request);
-        FullHttpResponse response = new DefaultFullHttpResponse(request.protocolVersion(), HttpResponseStatus.TEMPORARY_REDIRECT);
-        response.headers()
-                .set(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=UTF-8")
-                .setInt(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes())
-                .set(HttpHeaderNames.LOCATION, "https://positional-audio.now.sh" + request.uri());
-        if (keepAlive) {
-            if (!request.protocolVersion().isKeepAliveDefault()) {
-                response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            }
-        } else {
-            // Tell the client we're going to close the connection.
-            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        }
-
-        ChannelFuture f = ctx.write(response);
-
-        if (!keepAlive) {
-            f.addListener(ChannelFutureListener.CLOSE);
-        }
-    }
 }

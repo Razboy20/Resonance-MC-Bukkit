@@ -11,6 +11,12 @@ public class AuthFailedPacket extends ClientBoundPacket {
     }
 
     @Override
+    public String repr() {
+        return getClass().getSimpleName() + "()";
+    }
+
+
+    @Override
     public String read() {
         return withIdAction().toString();
     }

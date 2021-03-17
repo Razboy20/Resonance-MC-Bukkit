@@ -8,6 +8,10 @@ public class PeerConnectPacket extends ClientBoundPacket {
     protected PacketType setPacketType() {
         return PacketType.PEER_CONNECT;
     }
+    @Override
+    public String repr() {
+        return getClass().getSimpleName() + "()";
+    }
 
     @Override
     public String read() {

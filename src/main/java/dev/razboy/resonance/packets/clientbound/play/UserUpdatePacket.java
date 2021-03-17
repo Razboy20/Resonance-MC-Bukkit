@@ -17,6 +17,11 @@ public class UserUpdatePacket extends ClientBoundPacket {
     }
 
     @Override
+    public String repr() {
+        return getClass().getSimpleName() + "(user=" + user.toString() + ")";
+    }
+
+    @Override
     public String read() {
         return withIdActionBody(new JSONObject().put("type", "position").put("pos", user.getJSONObject("pos"))).toString();
     }
