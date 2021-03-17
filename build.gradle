@@ -25,5 +25,10 @@ dependencies {
     implementation ("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
     implementation (group: 'org.json', name: 'json', version: '20201115')
     compileOnly ("com.google.guava:guava:30.1-jre")
+}
 
+task deploy (dependsOn: build, type: Copy) {
+    from "build/libs"
+    into "src/test/server/plugins"
+    include "*.jar"
 }
