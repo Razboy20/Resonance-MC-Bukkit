@@ -6,6 +6,7 @@ import dev.razboy.resonance.network.Connection;
 import dev.razboy.resonance.network.Request;
 import dev.razboy.resonance.packets.clientbound.play.PeerUpdatePacket;
 import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
+import dev.razboy.resonance.request.SyncReqManager;
 import dev.razboy.resonance.token.Token;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import net.kyori.adventure.text.Component;
@@ -56,12 +57,25 @@ public class Clients {
          **/
     }
     public void update() {
-        HashMap<Client, JSONObject> clientInfo = new HashMap<>();
+        HashMap<Client, JSONObject> clientOnlineUpdates = new HashMap<>();
+        HashMap<Client, JSONObject> clientPositionUpdates = new HashMap<>();
         clients.forEach((token, client) -> {
-            UserUpdatePacket userUpdatePacket = new UserUpdatePacket();
-            clientInfo.put(client, client.getUser().update());
-            userUpdatePacket.setUser(clientInfo.get(client));
-            Resonance.getHttpRequestManager().addOutgoing(new Request(client.getConnection(), userUpdatePacket));
+            if (client.getUser().onlineUpdate()) {
+                UserUpdatePacket userUpdatePacket = new UserUpdatePacket();
+                JSONObject updatedOnline = client.getUser().updateOnline();
+                clientOnlineUpdates.put(client, updatedOnline);
+                userUpdatePacket.setUser(updatedOnline.getJSONObject("user"));
+                userUpdatePacket.setType(UserUpdatePacket.ONLINE);
+                SyncReqManager.send(new Request(client.getConnection(), userUpdatePacket));
+            }
+            if (client.getUser().positionUpdate()) {
+                UserUpdatePacket userUpdatePacket = new UserUpdatePacket();
+                JSONObject updatedPosition = client.getUser().updatePosition();
+                clientPositionUpdates.put(client, updatedPosition);
+                userUpdatePacket.setUser(updatedPosition.getJSONObject("user"));
+                userUpdatePacket.setType(UserUpdatePacket.POSITION);
+                SyncReqManager.send(new Request(client.getConnection(), userUpdatePacket));
+            }
         });
         /*
         clientInfo.keySet().forEach((client -> {

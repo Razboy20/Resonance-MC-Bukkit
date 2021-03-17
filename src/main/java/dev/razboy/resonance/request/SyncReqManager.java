@@ -64,7 +64,7 @@ public class SyncReqManager extends IRequestManager {
         try {
             Packet packet = request.packet;
             if (packet instanceof ServerBoundPacket) {
-                System.out.println(packet.repr());
+                //System.out.println(packet.repr());
                 if (packet instanceof AuthTokenAuthenticatePacket) {
                     authTokenAuthenticate(request, packet);
                 } else if (packet instanceof LogoutPacket) {
@@ -103,12 +103,12 @@ public class SyncReqManager extends IRequestManager {
             userInfoPacket.setMessageId(packet.getMessageId());
             userInfoPacket.setToken(token.token());
             userInfoPacket.setUser(client.getUserJson());
-            System.out.println(userInfoPacket.repr());
-            Resonance.getHttpRequestManager().addOutgoing(request.setPacket(userInfoPacket));
+            //System.out.println(userInfoPacket.repr());
+            send(request.setPacket(userInfoPacket));
             return;
         }
 
-        Resonance.getHttpRequestManager().addOutgoing(request.setPacket(new AuthFailedPacket().setMessageId(packet.getMessageId())));
+        send(request.setPacket(new AuthFailedPacket().setMessageId(packet.getMessageId())));
     }
 
 
@@ -123,19 +123,22 @@ public class SyncReqManager extends IRequestManager {
                     authenticatedPacket.setMessageId(packet.getMessageId());
                     authenticatedPacket.setToken(client.getToken().token());
                     authenticatedPacket.setUser(client.getUserJson());
-                    System.out.println(request.setPacket(authenticatedPacket).packet.repr());
-                    Resonance.getWebSocketRequestManager().addOutgoing(request.setPacket(authenticatedPacket));
+                    //System.out.println(request.setPacket(authenticatedPacket).packet.repr());
+                    send(request.setPacket(authenticatedPacket));
                     clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), packet.getAuthToken());
 
                     return;
                 }
             }
-        Resonance.getHttpRequestManager().addOutgoing(request.setPacket(new AuthFailedPacket().setMessageId(packet.getMessageId())));
+        send(request.setPacket(new AuthFailedPacket().setMessageId(packet.getMessageId())));
 
     }
 
     public void send(Component message) {
         sendQueue.add(message);
+    }
+    public static void send(Request request) {
+        request.ctx.writeAndFlush(new TextWebSocketFrame(request.packet.read()));
     }
 
 }

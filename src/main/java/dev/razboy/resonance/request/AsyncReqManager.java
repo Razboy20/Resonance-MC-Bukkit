@@ -28,18 +28,7 @@ public class AsyncReqManager extends IRequestManager {
     }
 
     @Override
-    protected void handleOutgoing(Request request) {
-        System.out.println("Packet Post: " + request.packet.repr());
-        if (request.packet != null) {
-            //System.out.println("Ows: " + request.webSocketFrame.retain().text());
-            request.ctx.writeAndFlush(new TextWebSocketFrame(request.packet.read()));
-            return;
-        } else if (request.fullHttpRequest != null) {
-            //System.out.println("Ohttp: " + request.fullHttpRequest.retain().uri());
-            request.ctx.writeAndFlush(request.fullHttpRequest);
-            return;
-        }
-        System.out.println("Invalid R");
+    public void handleOutgoing(Request request) {
     }
 
 

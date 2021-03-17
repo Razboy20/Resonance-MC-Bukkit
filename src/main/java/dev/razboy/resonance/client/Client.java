@@ -33,7 +33,7 @@ public class Client {
         return user;
     }
     public JSONObject getUserJson() {
-        return user.getJson();
+        return user.getInitialJson();
     }
 
     public void sendLogInMessage(String ip, String authToken) {

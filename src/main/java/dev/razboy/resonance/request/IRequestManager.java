@@ -44,7 +44,6 @@ abstract class IRequestManager implements Runnable {
                 }
                 for (Request request : outgoingQueue) {
                     //System.out.println("o: " + request);
-                    System.out.println("Packet Pre: " + request.packet.repr());
                     handleOutgoing(request);
                 }
                 outgoingQueue.clear();

@@ -1,5 +1,7 @@
 package dev.razboy.resonance.network;
 
+import dev.razboy.resonance.Resonance;
+import dev.razboy.resonance.config.ConfigType;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
@@ -7,7 +9,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 public class Server implements Runnable {
-    private static final int PORT = 25560;
+    private static int PORT = 25560;
     private static final EventLoopGroup bossGroup = new NioEventLoopGroup(1);
     private static final EventLoopGroup workerGroup = new NioEventLoopGroup();
 
@@ -17,7 +19,6 @@ public class Server implements Runnable {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ServerInit());
-
             Channel ch = b.bind(PORT).sync().channel();
             ch.closeFuture().sync();
         } finally {

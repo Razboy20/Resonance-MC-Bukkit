@@ -48,7 +48,7 @@ public class TokenCommand implements CommandExecutor {
             tokenMessage = tokenMessage.replaceAll("%TOKEN%", token.token());
         } catch (Exception ignored) {}
         try {
-            tokenMessage = tokenMessage.replaceAll("%URL%", "https://thiccaxe.net/token/" + token.token());
+            tokenMessage = tokenMessage.replaceAll("%URL%", "https://" + Resonance.getConfigManager().get(ConfigType.DEFAULT).getString("domain", "resonance.razboy.dev") + "/token/" + token.token());
         } catch (Exception ignored) {}
         Component message = Component.newline().append(MiniMessage.get().parse(ConfigManager.getPrefix())).append(MiniMessage.get().parse(tokenMessage)).append(Component.newline());
         player.sendMessage(message);
