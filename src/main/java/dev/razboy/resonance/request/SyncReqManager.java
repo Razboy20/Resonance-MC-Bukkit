@@ -8,9 +8,13 @@ import dev.razboy.resonance.packets.Packet;
 import dev.razboy.resonance.packets.clientbound.auth.AuthFailedPacket;
 import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
 import dev.razboy.resonance.packets.clientbound.play.OUserInfoPacket;
+import dev.razboy.resonance.packets.clientbound.play.PeerConnectPacket;
+import dev.razboy.resonance.packets.clientbound.play.PeerDisconnectPacket;
 import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.LogoutPacket;
+import dev.razboy.resonance.packets.serverbound.play.UserConnectPacket;
+import dev.razboy.resonance.packets.serverbound.play.UserDisconnectPacket;
 import dev.razboy.resonance.packets.serverbound.play.UserInfoPacket;
 import dev.razboy.resonance.token.Token;
 import dev.razboy.resonance.token.TokenManager;
@@ -18,8 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,6 +71,11 @@ public class SyncReqManager extends IRequestManager {
                     authTokenAuthenticate(request, packet);
                 } else if (packet instanceof LogoutPacket) {
                     logoutUser(request, packet);
+                } else if (packet instanceof UserConnectPacket) {
+                    broadcastConnect(request, packet);
+                } else if (packet instanceof UserDisconnectPacket) {
+                    broadcastDisconnect(request, packet);
+                    disconnectUser(request, packet);
                 } else if (packet instanceof UserInfoPacket) {
                     tokenAuthenticate(request, packet);
                 }
@@ -80,15 +87,40 @@ public class SyncReqManager extends IRequestManager {
         }
     }
 
+    private void broadcastDisconnect(Request request, Packet packet) {
+        Client client = clients.getClient(request.connection);
+        if (client != null) {
+            JSONObject data = client.getUser().withData();
+            PeerDisconnectPacket peerDisconnectPacket = new PeerDisconnectPacket();
+            peerDisconnectPacket.setUser(data);
+            clients.sendAllBut(request.setPacket(peerDisconnectPacket));
+        }
+    }
+
+    private void broadcastConnect(Request request, Packet packet) {
+         Client client = clients.getClient(request.connection);
+         if (client != null) {
+             JSONObject data = client.getUser().withData();
+             PeerConnectPacket peerConnectPacket = new PeerConnectPacket();
+             peerConnectPacket.setUser(data);
+             clients.sendAllBut(request.setPacket(peerConnectPacket));
+         }
+    }
+
+    private void disconnectUser(Request request, Packet packet) {
+        if (clients.hasClient(request.connection)) {
+            clients.removeClient(request.connection);
+        }
+    }
+
     @Override
     protected void handleOutgoing(Request request) {
 
     }
 
     private void logoutUser(Request request, Packet packet) {
-        if (clients.hasClient(request.connection)) {
-            clients.removeClient(request.connection);
-        }
+        disconnectUser(request, packet);
+        clients.logoutClient(request.connection);
     }
 
     private void tokenAuthenticate(Request request, Packet p) {

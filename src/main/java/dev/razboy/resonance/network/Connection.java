@@ -51,7 +51,7 @@ public class Connection extends SimpleChannelInboundHandler<Object> {
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         if (websocketConnection) {
-            Resonance.getWebSocketRequestManager().addIncoming(new Request(this, ctx, new TextWebSocketFrame("{\"action\":\"logout\"}")));
+            Resonance.getWebSocketRequestManager().addIncoming(new Request(this, ctx, new TextWebSocketFrame("{\"action\":\"user_disconnect\"}")));
         }
     }
 

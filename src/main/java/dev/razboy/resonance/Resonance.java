@@ -49,7 +49,7 @@ public class Resonance extends JavaPlugin {
         dataFolder = getDataFolder();
         configManager = new ConfigManager(dataFolder);
         tokenManager = new TokenManager(this, (TokenConfig)configManager.get(ConfigType.TOKENS));
-        tokenManager.generateAuthToken(UUID.fromString("bee4331f-7bf2-4d92-b8c4-82cd2f5f38cc").toString(), "4O3F0rbidden", "ABCDEF");
+        //tokenManager.generateAuthToken(UUID.fromString("bee4331f-7bf2-4d92-b8c4-82cd2f5f38cc").toString(), "4O3F0rbidden", "ABCDEF");
 
 
 

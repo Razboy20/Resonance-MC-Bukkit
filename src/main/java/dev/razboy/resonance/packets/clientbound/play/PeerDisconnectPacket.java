@@ -2,6 +2,7 @@ package dev.razboy.resonance.packets.clientbound.play;
 
 import dev.razboy.resonance.packets.PacketType;
 import dev.razboy.resonance.packets.clientbound.ClientBoundPacket;
+import org.json.JSONObject;
 
 public class PeerDisconnectPacket extends ClientBoundPacket {
     @Override
@@ -12,9 +13,13 @@ public class PeerDisconnectPacket extends ClientBoundPacket {
     public String repr() {
         return getClass().getSimpleName() + "()";
     }
+    private JSONObject user;
+    public void setUser(JSONObject user) {
+        this.user = user;
+    }
 
     @Override
     public String read() {
-        return null;
+        return withIdActionBody(user).toString();
     }
 }

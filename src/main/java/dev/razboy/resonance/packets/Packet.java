@@ -77,5 +77,7 @@ public abstract class Packet {
         return messageId;
     }
 
-    public abstract String repr();
+    public String repr() {
+        return getClass().getSimpleName() + "()";
+    }
 }

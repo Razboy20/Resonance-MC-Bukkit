@@ -2,10 +2,14 @@ package dev.razboy.resonance.packets;
 
 import dev.razboy.resonance.packets.clientbound.auth.AuthFailedPacket;
 import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
+import dev.razboy.resonance.packets.clientbound.play.PeerConnectPacket;
+import dev.razboy.resonance.packets.clientbound.play.PeerInfoPacket;
 import dev.razboy.resonance.packets.clientbound.play.PeerUpdatePacket;
 import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.LogoutPacket;
+import dev.razboy.resonance.packets.serverbound.play.UserConnectPacket;
+import dev.razboy.resonance.packets.serverbound.play.UserDisconnectPacket;
 import dev.razboy.resonance.packets.serverbound.play.UserInfoPacket;
 
 public enum PacketType {
@@ -18,7 +22,9 @@ public enum PacketType {
     PEER_INFO(0x07, "peer_info"),
     PEER_CONNECT(0x08, "peer_connect"),
     PEER_DISCONNECT(0x09, "peer_disconnect"),
+    USER_CONNECT(0x0a, "user_connect"),
     LOGOUT(0xFF, "logout"),
+    USER_DISCONNECT(0xFE, "user_disconnect"),
     AUTH_FAILED(0x03, "auth_failed");
     public final int id;
     public final String action;
@@ -44,14 +50,12 @@ public enum PacketType {
                 return new AuthTokenAuthenticatePacket();
             case 0x02:
                 return new AuthenticatedPacket();
-            case 0x03:
-                return new AuthFailedPacket();
             case 0x04:
                 return new UserInfoPacket();
-            case 0x05:
-                return new UserUpdatePacket();
-            case 0x06:
-                return new PeerUpdatePacket();
+            case 0x0a:
+                return new UserConnectPacket();
+            case 0xFE:
+                return new UserDisconnectPacket();
             case 0xFF:
                 return new LogoutPacket();
         }

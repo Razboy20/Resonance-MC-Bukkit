@@ -3,6 +3,7 @@ package dev.razboy.resonance.token;
 import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.config.impl.TokenConfig;
+import dev.razboy.resonance.network.Connection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -105,5 +106,11 @@ public class TokenManager {
             }
         } catch (Exception e) {e.printStackTrace();}
         return null;
+    }
+
+    public void invalidateToken(Token token) {
+        tokens.remove(token);
+        tokenStrings.remove(token.uuid());
+        tokenConfig.saveTokens(tokens);
     }
 }
