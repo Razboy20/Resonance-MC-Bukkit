@@ -21,9 +21,14 @@ repositories {
 
 dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
-    compileOnly ('io.netty:netty-all:4.1.60.Final')
-    implementation ("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
-    implementation (group: 'org.json', name: 'json', version: '20201115')
-    compileOnly ("com.google.guava:guava:30.1-jre")
+    compileOnly('io.netty:netty-all:4.1.60.Final')
+    implementation("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
+    implementation(group: 'org.json', name: 'json', version: '20201115')
+    compileOnly("com.google.guava:guava:30.1-jre")
+}
 
+task deploy (dependsOn: build, type: Copy) {
+    from "build/libs"
+    into "src/test/server/plugins"
+    include "*.jar"
 }
