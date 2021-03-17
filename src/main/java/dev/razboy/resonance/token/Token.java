@@ -1,7 +1,5 @@
 package dev.razboy.resonance.token;
 
-import java.util.UUID;
-
 public class Token {
     private static final int SHORT_LEN = 6;
     private static final String SHORT_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

@@ -1,14 +1,14 @@
 package dev.razboy.resonance.listener;
 
-import dev.razboy.resonance.request.WebSocketManager;
+import dev.razboy.resonance.request.SyncReqManager;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 public class MessageListener implements Listener {
-    private final WebSocketManager webSocketManager;
+    private final SyncReqManager webSocketManager;
 
-    public MessageListener(WebSocketManager webSocketManager) {
+    public MessageListener(SyncReqManager webSocketManager) {
         this.webSocketManager = webSocketManager;
     }
 

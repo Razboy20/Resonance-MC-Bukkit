@@ -12,12 +12,8 @@ import dev.razboy.resonance.network.Server;
 import dev.razboy.resonance.request.*;
 import dev.razboy.resonance.token.TokenManager;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.Objects;
@@ -33,8 +29,8 @@ public class Resonance extends JavaPlugin {
     private static final BiMap<String, String> something = HashBiMap.create();
 
     private static final Server server = new Server();
-    private static HttpRequestManager httpRequestManager;
-    private static WebSocketManager webSocketRequestManager;
+    private static AsyncReqManager httpRequestManager;
+    private static SyncReqManager webSocketRequestManager;
 
 
     private static ConfigManager configManager;
@@ -58,8 +54,8 @@ public class Resonance extends JavaPlugin {
 
 
 
-        webSocketRequestManager = new WebSocketManager(this);
-        httpRequestManager = new HttpRequestManager(this);
+        webSocketRequestManager = new SyncReqManager(this);
+        httpRequestManager = new AsyncReqManager(this);
         wsTask = Bukkit.getScheduler().runTaskTimer (this, webSocketRequestManager, 10, 1);
         httpTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this, httpRequestManager, 10, 1);
         serverTask = Bukkit.getScheduler().runTaskAsynchronously(this, server);
@@ -80,11 +76,11 @@ public class Resonance extends JavaPlugin {
 
 
 
-    public static HttpRequestManager getHttpRequestManager() {
+    public static AsyncReqManager getHttpRequestManager() {
         return httpRequestManager;
     }
 
-    public static WebSocketManager getWebSocketRequestManager() {return webSocketRequestManager;}
+    public static SyncReqManager getWebSocketRequestManager() {return webSocketRequestManager;}
     public static void log(String message) {
         instance.getLogger().info(message);
     }

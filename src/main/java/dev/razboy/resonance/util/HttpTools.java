@@ -1,8 +1,5 @@
-package dev.razboy.resonance.request;
+package dev.razboy.resonance.util;
 
-import dev.razboy.resonance.Resonance;
-import dev.razboy.resonance.network.Request;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,26 +7,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 
-public class HttpRequestManager extends IRequestManager {
-
-    public HttpRequestManager(Resonance instance) {
-        plugin = instance;
-    }
-
-
-    @Override
-    protected void additional() {}
-
-    @Override
-    public void handle(Request request) {
-        if (request.fullHttpRequest == null) {
-            return;
-        }
-        FullHttpRequest req = request.fullHttpRequest;
-        writeTemplateResponse(request.ctx, request.connection.getRemote(), req);
-    }
-
-
+public class HttpTools {
     public static boolean upgrade(ChannelHandlerContext ctx, FullHttpRequest request) {
         if (request.headers().get("Connection") == null || request.headers().get("Upgrade") == null) {
             return false;
@@ -48,8 +26,6 @@ public class HttpRequestManager extends IRequestManager {
         }
         return false;
     }
-
-
 
     public static String getRemoteAddress(ChannelHandlerContext ctx, FullHttpRequest request) {
         HttpHeaders headers = request.headers();
