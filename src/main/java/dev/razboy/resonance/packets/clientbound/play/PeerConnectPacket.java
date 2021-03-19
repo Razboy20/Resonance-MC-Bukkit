@@ -11,7 +11,7 @@ public class PeerConnectPacket extends ClientBoundPacket {
     }
     @Override
     public String repr() {
-        return getClass().getSimpleName() + "()";
+        return getClass().getSimpleName() + "(user=" + user.toString() + ")";
     }
     private JSONObject user;
 

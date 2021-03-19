@@ -1,16 +1,10 @@
 package dev.razboy.resonance.packets;
 
-import dev.razboy.resonance.packets.clientbound.auth.AuthFailedPacket;
 import dev.razboy.resonance.packets.clientbound.auth.AuthenticatedPacket;
-import dev.razboy.resonance.packets.clientbound.play.PeerConnectPacket;
-import dev.razboy.resonance.packets.clientbound.play.PeerInfoPacket;
-import dev.razboy.resonance.packets.clientbound.play.PeerUpdatePacket;
-import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.LogoutPacket;
-import dev.razboy.resonance.packets.serverbound.play.UserConnectPacket;
-import dev.razboy.resonance.packets.serverbound.play.UserDisconnectPacket;
-import dev.razboy.resonance.packets.serverbound.play.UserInfoPacket;
+import dev.razboy.resonance.packets.serverbound.auth.UserInfoPacket;
+import dev.razboy.resonance.packets.serverbound.play.*;
 
 public enum PacketType {
     INVALID(0x00, "invalid"),
@@ -23,6 +17,8 @@ public enum PacketType {
     PEER_CONNECT(0x08, "peer_connect"),
     PEER_DISCONNECT(0x09, "peer_disconnect"),
     USER_CONNECT(0x0a, "user_connect"),
+    PEER_RELAY_ICE_CANDIDATE(0x0b, "peer_relayicecandidate"),
+    PEER_RELAY_SESSION_DESC(0x0c, "peer_relaysessiondescription"),
     LOGOUT(0xFF, "logout"),
     USER_DISCONNECT(0xFE, "user_disconnect"),
     AUTH_FAILED(0x03, "auth_failed");
@@ -52,8 +48,12 @@ public enum PacketType {
                 return new AuthenticatedPacket();
             case 0x04:
                 return new UserInfoPacket();
+            case 0x07:
+                return new PeerInfoPacket();
             case 0x0a:
                 return new UserConnectPacket();
+            case 0x0b:
+                return new PeerRelayIceCandidatePacket();
             case 0xFE:
                 return new UserDisconnectPacket();
             case 0xFF:

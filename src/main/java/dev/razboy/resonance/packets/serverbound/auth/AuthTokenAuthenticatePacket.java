@@ -25,11 +25,7 @@ public class AuthTokenAuthenticatePacket extends ServerBoundPacket {
 
     @Override
     public void readJson(JSONObject json) throws MalformedPacketException {
-        if (json.has("body")) {
-            JSONObject body = json.getJSONObject("body");
-            if (body.has("token")) {
-                authToken = body.get("token").toString();
-            }
-        }
+        JSONObject body = json.getJSONObject("body");
+        authToken = body.get("token").toString();
     }
 }

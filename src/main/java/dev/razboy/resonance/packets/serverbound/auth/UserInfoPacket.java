@@ -1,4 +1,4 @@
-package dev.razboy.resonance.packets.serverbound.play;
+package dev.razboy.resonance.packets.serverbound.auth;
 
 import dev.razboy.resonance.packets.MalformedPacketException;
 import dev.razboy.resonance.packets.PacketType;
@@ -24,8 +24,6 @@ public class UserInfoPacket extends ServerBoundPacket {
 
     @Override
     public void readJson(JSONObject json) throws MalformedPacketException {
-        if (json.has("bearer")) {
-            token = json.get("bearer").toString();
-        }
+        token = json.getString("bearer");
     }
 }

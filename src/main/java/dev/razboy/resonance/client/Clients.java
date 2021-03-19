@@ -4,8 +4,12 @@ import com.google.common.collect.HashBiMap;
 import dev.razboy.resonance.Resonance;
 import dev.razboy.resonance.network.Connection;
 import dev.razboy.resonance.network.Request;
+import dev.razboy.resonance.packets.Packet;
+import dev.razboy.resonance.packets.clientbound.play.OPeerInfoPacket;
+import dev.razboy.resonance.packets.clientbound.play.OPeerRelayIceCandidatePacket;
 import dev.razboy.resonance.packets.clientbound.play.PeerUpdatePacket;
 import dev.razboy.resonance.packets.clientbound.play.UserUpdatePacket;
+import dev.razboy.resonance.packets.serverbound.play.PeerRelayIceCandidatePacket;
 import dev.razboy.resonance.request.SyncReqManager;
 import dev.razboy.resonance.token.Token;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
@@ -14,11 +18,12 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Clients {
     private final HashBiMap<Connection, String> connections = HashBiMap.create();
     private final HashBiMap<String, Client> clients = HashBiMap.create();
-
+    private final HashBiMap<String, Client> clientUuids = HashBiMap.create();
 
     public Clients(){}
 
@@ -26,6 +31,7 @@ public class Clients {
         connections.forcePut(connection, token.token());
         Client client = new Client(connection, token);
         clients.forcePut(token.token(), client);
+        clientUuids.forcePut(token.uuid(), client);
         return client;
     }
     public boolean hasClient(String token) {
@@ -49,11 +55,26 @@ public class Clients {
         }
         return null;
     }
+    public Client getClient(UUID uuid) {
+        if (clientUuids.containsKey(uuid.toString())) {
+            return clientUuids.get(uuid.toString());
+        }
+        return null;
+    }
 
 
     public void removeClient(Connection connection) {
-        clients.remove(connections.get(connection));
+        if (connections.containsKey(connection)) {
+            String token = connections.get(connection);
+            if (clients.containsKey(token)) {
+                Client c = Objects.requireNonNull(clients.get(token));
+                clientUuids.remove(c.getToken().uuid());
+            }
+        }
+
         connections.remove(connection);
+        clients.remove(connections.get(connection));
+
     }
 
     public void sendAll(Component message) {
@@ -103,14 +124,14 @@ public class Clients {
         });
         if (clients.size() > 1) {
             clients.forEach((token, client) -> {
-                PeerUpdatePacket peerOnlinePacket = new PeerUpdatePacket();
+                PeerUpdatePacket peerUpdatePacket = new PeerUpdatePacket();
                 clientUpdates.forEach((peer, json) -> {
                     if (!peer.getToken().uuid().equals(client.getToken().uuid())) {
-                        peerOnlinePacket.addPeer(json);
+                        peerUpdatePacket.addPeer(json);
                     }
                 });
-                if (peerOnlinePacket.needsSending()) {
-                    SyncReqManager.send(new Request(client.getConnection(), peerOnlinePacket));
+                if (peerUpdatePacket.needsSending()) {
+                    SyncReqManager.send(new Request(client.getConnection(), peerUpdatePacket));
                 }
             });
         }
@@ -138,11 +159,48 @@ public class Clients {
     }
 
     public void sendAllBut(Request request) {
+        //System.out.println(request.packet.repr());
         String message = request.packet.read();
         clients.forEach((token, client) -> {
             if (client.getConnection() != request.connection) {
                 client.getConnection().getCtx().writeAndFlush(new TextWebSocketFrame(message));
             }
         });
+    }
+
+    public void sendPeerInitial(Client client) {
+        if (clients.size() > 1) {
+            PeerUpdatePacket peerUpdatePacket = new PeerUpdatePacket();
+            clients.forEach((token, peer) -> {
+                if (peer.getConnection() != client.getConnection()) {
+                    peerUpdatePacket.addPeer(peer.getUserJson());
+                }
+            });
+            if (peerUpdatePacket.needsSending()) {
+                SyncReqManager.send(new Request(client.getConnection(), peerUpdatePacket));
+            }
+        }
+    }
+    public void sendPeerInfo(Client client, Packet packet) {
+        OPeerInfoPacket peerInfoPacket = new OPeerInfoPacket();
+        peerInfoPacket.setMessageId(packet.getMessageId());
+        clients.forEach((t, peer) -> {
+            if (peer.getConnection() != client.getConnection()) {
+                peerInfoPacket.addPeer(peer.getUserJson());
+            }
+        });
+        //System.out.println(peerInfoPacket.repr());
+        SyncReqManager.send(new Request(client.getConnection(), peerInfoPacket));
+    }
+
+    public void relayIce(Client client, PeerRelayIceCandidatePacket packet) {
+        UUID peerId = UUID.fromString(packet.getPeerId());
+        Client c = getClient(peerId);
+        if (client != null) {
+            OPeerRelayIceCandidatePacket relayPacket = new OPeerRelayIceCandidatePacket();
+            relayPacket.setPeerId(client.getToken().uuid());
+            relayPacket.setIceCandidate(packet.getIceCandidate());
+            SyncReqManager.send(new Request(c.getConnection(), relayPacket));
+        }
     }
 }

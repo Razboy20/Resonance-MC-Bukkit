@@ -13,9 +13,11 @@ import dev.razboy.resonance.packets.clientbound.play.PeerDisconnectPacket;
 import dev.razboy.resonance.packets.serverbound.ServerBoundPacket;
 import dev.razboy.resonance.packets.serverbound.auth.AuthTokenAuthenticatePacket;
 import dev.razboy.resonance.packets.serverbound.auth.LogoutPacket;
+import dev.razboy.resonance.packets.serverbound.play.PeerInfoPacket;
+import dev.razboy.resonance.packets.serverbound.play.PeerRelayIceCandidatePacket;
 import dev.razboy.resonance.packets.serverbound.play.UserConnectPacket;
 import dev.razboy.resonance.packets.serverbound.play.UserDisconnectPacket;
-import dev.razboy.resonance.packets.serverbound.play.UserInfoPacket;
+import dev.razboy.resonance.packets.serverbound.auth.UserInfoPacket;
 import dev.razboy.resonance.token.Token;
 import dev.razboy.resonance.token.TokenManager;
 import io.netty.channel.ChannelHandlerContext;
@@ -72,18 +74,39 @@ public class SyncReqManager extends IRequestManager {
                 } else if (packet instanceof LogoutPacket) {
                     logoutUser(request, packet);
                 } else if (packet instanceof UserConnectPacket) {
+                    //System.out.println(packet.repr());
                     broadcastConnect(request, packet);
                 } else if (packet instanceof UserDisconnectPacket) {
+                    //System.out.println(packet.repr());
                     broadcastDisconnect(request, packet);
                     disconnectUser(request, packet);
                 } else if (packet instanceof UserInfoPacket) {
                     tokenAuthenticate(request, packet);
+                } else if (packet instanceof PeerInfoPacket) {
+                    sendPeers(request, packet);
+                } else if (packet instanceof PeerRelayIceCandidatePacket) {
+                    handleIceRelay(request, packet);
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handleIceRelay(Request request, Packet p) {
+        Client client = clients.getClient(request.connection);
+        if (client != null) {
+            PeerRelayIceCandidatePacket packet = (PeerRelayIceCandidatePacket) p;
+            clients.relayIce(client, packet);
+        }
+    }
+
+    private void sendPeers(Request request, Packet packet) {
+        Client client = clients.getClient(request.connection);
+        if (client != null) {
+            clients.sendPeerInfo(client, packet);
         }
     }
 
@@ -100,7 +123,8 @@ public class SyncReqManager extends IRequestManager {
     private void broadcastConnect(Request request, Packet packet) {
          Client client = clients.getClient(request.connection);
          if (client != null) {
-             JSONObject data = client.getUser().withData();
+             JSONObject data = client.getUserJson();
+             //.out.println(data.toString());
              PeerConnectPacket peerConnectPacket = new PeerConnectPacket();
              peerConnectPacket.setUser(data);
              clients.sendAllBut(request.setPacket(peerConnectPacket));
@@ -137,6 +161,7 @@ public class SyncReqManager extends IRequestManager {
             userInfoPacket.setUser(client.getUserJson());
             //System.out.println(userInfoPacket.repr());
             send(request.setPacket(userInfoPacket));
+            clients.sendPeerInitial(client);
             return;
         }
 
@@ -154,11 +179,12 @@ public class SyncReqManager extends IRequestManager {
                     AuthenticatedPacket authenticatedPacket = new AuthenticatedPacket();
                     authenticatedPacket.setMessageId(packet.getMessageId());
                     authenticatedPacket.setToken(client.getToken().token());
+                    JSONObject user = client.getUserJson();
                     authenticatedPacket.setUser(client.getUserJson());
                     //System.out.println(request.setPacket(authenticatedPacket).packet.repr());
                     send(request.setPacket(authenticatedPacket));
                     clients.getClient(token.token()).sendLogInMessage(request.connection.getRemote(), packet.getAuthToken());
-
+                    clients.sendPeerInitial(client);
                     return;
                 }
             }

@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class PeerInfoPacket extends ClientBoundPacket {
+public class OPeerInfoPacket extends ClientBoundPacket {
     @Override
     protected PacketType setPacketType() {
         return PacketType.PEER_INFO;
