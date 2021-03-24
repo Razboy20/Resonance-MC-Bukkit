@@ -2,4 +2,3 @@ build/*
 .gradle/*
 gradle/*
 .idea/compiler.xml
-src/test/server/*

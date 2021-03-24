@@ -1,2 +1,15 @@
-rootProject.name = 'Resonance-MC-Bukkit'
+pluginManagement {
+    repositories {
+        maven {
+            name = 'Fabric'
+            url = 'https://maven.fabricmc.net/'
+        }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'Resonance'
+include ':api'
+include ':bukkit'
+include ':fabric'
+
 

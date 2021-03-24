@@ -1,34 +1,45 @@
 plugins {
+    id "net.minecrell.licenser" version "0.4.1"
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'java'
-    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
-group 'dev.razboy.resonance'
-version '1.0.0'
-targetCompatibility = '11'
-sourceCompatibility = '11'
+group 'net.thiccaxe.resonance'
+version '1.1.0'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+
+configure(subprojects.findAll {it.name != "examples"}) {
+    group project.group
+    version version
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    setArchivesBaseName("Resonance-$project.name-$parent.version")
+
+    shadowJar {
+        archiveFileName = "Resonance-$project.name-$parent.version" + ".jar"
+    }
+
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        compileOnly ('io.netty:netty-all:4.1.60.Final')
+    }
+}
+
+
+
 repositories {
     mavenCentral()
-    maven {
-        name 'papermc'
-        url 'https://papermc.io/repo/repository/maven-public/'
-    }
-    maven {
-        name = "sonatype-oss-snapshots"
-        url = "https://oss.sonatype.org/content/repositories/snapshots/"
-    }
 }
+
 
 dependencies {
-    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
-    compileOnly ('io.netty:netty-all:4.1.60.Final')
-    implementation ("net.kyori:adventure-text-minimessage:4.0.0-SNAPSHOT")
-    implementation (group: 'org.json', name: 'json', version: '20201115')
-    compileOnly ("com.google.guava:guava:30.1-jre")
 }
 
-task deploy (dependsOn: build, type: Copy) {
-    from "build/libs"
-    into "src/test/server/plugins"
-    include "*.jar"
-}

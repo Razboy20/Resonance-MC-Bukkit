@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "resonancemc",
+  "version": "${version}",
+  "name": "Resonance",
+  "authors": ["thiccaxe"],
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "net.thiccaxe.resonance.fabric.ResonanceFabric"
+    ]
+  },
+  "depends": {
+    "minecraft": "1.16.x"
+  }
+}

@@ -1,0 +1,15 @@
+repositories {
+    maven {
+        name 'spigot-repo'
+        url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+}
+
+dependencies {
+    implementation project(":api")
+    compileOnly('org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT')
+}
+
+shadowJar {
+    relocate 'org.spigotmc.spigot-api', 'net.thiccaxe.libs.spigot-api'
+}

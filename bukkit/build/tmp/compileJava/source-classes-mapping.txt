@@ -1,0 +1,2 @@
+net/thiccaxe/resonance/bukkit/ResonanceBukkit.java
+ net.thiccaxe.resonance.bukkit.ResonanceBukkit
