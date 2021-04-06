@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.system.module.type="sourceSet" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output-test url="file://$MODULE_DIR$/../../../common/build/classes/java/test" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../common/src/test">
+      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/test/resources" type="java-test-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="Resonance.api.main" />
+    <orderEntry type="library" name="Gradle: org.json:json:20210307" level="project" />
+  </component>
+</module>

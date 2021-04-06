@@ -1,0 +1,56 @@
+[09:57:30] [main/INFO] (FabricLoader) Loading for game Minecraft 1.16.5
+[09:57:30] [main/DEBUG] (FabricLoader) Requesting deobfuscation of minecraft-1.16.5-mapped-net.fabricmc.yarn-1.16.5+build.1-v2.jar
+[09:57:30] [main/DEBUG] (FabricLoader) [Knot] Proposed file:/C:/Users/super/.gradle/caches/fabric-loom/1.16.5-mapped-net.fabricmc.yarn-1.16.5+build.1-v2/minecraft-1.16.5-mapped-net.fabricmc.yarn-1.16.5+build.1-v2.jar to classpath.
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) Found game constructor: net.minecraft.server.Main -> net/minecraft/server/Main
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) Patching game constructor main([Ljava/lang/String;)V
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) 20w22a+ detected, patching main method...
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) Detected version above 20w22a
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) Applying brand name hook to net/minecraft/client/ClientBrandRetriever::getClientModName
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) Applying brand name hook to net/minecraft/server/MinecraftServer::getServerModName
+[09:57:30] [main/DEBUG] (FabricLoader|EntrypointTransformer) [EntrypointTransformer] Patched 3 classes.
+[09:57:30] [main/DEBUG] (Fabric|Loader) [ClasspathModCandidateFinder] Adding dev classpath directories to classpath.
+[09:57:30] [main/DEBUG] (Fabric|Loader) [ClasspathModCandidateFinder] Processing /C:/Users/super/Documents/IDEA/Resonance/fabric/build/libs/Resonance-fabric-1.1.0-dev.jar
+[09:57:30] [main/DEBUG] (Fabric|Loader) [ClasspathModCandidateFinder] Processing /C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar
+[09:57:30] [ForkJoinPool-1-worker-3/DEBUG] (Fabric|Loader) Testing file:/C:/Users/super/Documents/IDEA/Resonance/fabric/build/libs/Resonance-fabric-1.1.0-dev.jar
+[09:57:30] [ForkJoinPool-1-worker-5/DEBUG] (Fabric|Loader) Testing file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar
+[09:57:30] [ForkJoinPool-1-worker-3/DEBUG] (Fabric|Loader) Adding file:/C:/Users/super/Documents/IDEA/Resonance/fabric/build/libs/Resonance-fabric-1.1.0-dev.jar as ModCandidate{resonancemc@unspecified}
+[09:57:30] [ForkJoinPool-1-worker-5/DEBUG] (Fabric|Loader) Adding file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar as ModCandidate{fabricloader@0.11.1}
+[09:57:30] [ForkJoinPool-1-worker-5/DEBUG] (Fabric|Loader) Searching for nested JARs in ModCandidate{fabricloader@0.11.1}
+[09:57:30] [ForkJoinPool-1-worker-3/DEBUG] (Fabric|Loader) Searching for nested JARs in ModCandidate{resonancemc@unspecified}
+[09:57:30] [ForkJoinPool-1-worker-5/DEBUG] (Fabric|Loader) file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar
+[09:57:30] [ForkJoinPool-1-worker-3/DEBUG] (Fabric|Loader) file:/C:/Users/super/Documents/IDEA/Resonance/fabric/build/libs/Resonance-fabric-1.1.0-dev.jar
+[09:57:30] [main/DEBUG] (Fabric|Loader) Mod resolution detection time: 26ms
+[09:57:30] [main/DEBUG] (Fabric|Loader) Mod resolution time: 0ms
+[09:57:30] [main/INFO] (Fabric|Loader) [FabricLoader] Loading 4 mods: minecraft@1.16.5, java@15, resonancemc@unspecified, fabricloader@0.11.1
+[09:57:30] [main/DEBUG] (FabricLoader) [Knot] Proposed file:/C:/Users/super/.gradle/caches/fabric-loom/1.16.5-mapped-net.fabricmc.yarn-1.16.5+build.1-v2/minecraft-1.16.5-mapped-net.fabricmc.yarn-1.16.5+build.1-v2.jar to classpath.
+[09:57:30] [main/DEBUG] (FabricLoader) [Knot] Proposed file:/C:/Users/super/.jdks/openjdk-15.0.2/ to classpath.
+[09:57:30] [main/DEBUG] (FabricLoader) [Knot] Proposed file:/C:/Users/super/Documents/IDEA/Resonance/fabric/build/libs/Resonance-fabric-1.1.0-dev.jar to classpath.
+[09:57:30] [main/WARN] (Fabric|Loader) Mod `resonancemc` (unspecified) does not respect SemVer - comparison support is limited.
+[09:57:30] [main/DEBUG] (Fabric|Loader) Registering new-style initializer net.thiccaxe.resonance.fabric.ResonanceFabric for mod resonancemc (key main)
+[09:57:30] [main/DEBUG] (mixin) Mixin bootstrap service org.spongepowered.asm.service.mojang.MixinServiceLaunchWrapperBootstrap is not available: LaunchWrapper is not available
+[09:57:30] [main/DEBUG] (mixin) Mixin bootstrap service org.spongepowered.asm.service.modlauncher.MixinServiceModLauncherBootstrap is not available: ModLauncher is not available
+[09:57:30] [main/DEBUG] (mixin) MixinService [ModLauncher] is not valid
+[09:57:30] [main/DEBUG] (mixin) MixinService [Knot/Fabric] was successfully booted in jdk.internal.loader.ClassLoaders$AppClassLoader@4e0e2f2a
+[09:57:30] [main/INFO] (mixin) SpongePowered MIXIN Subsystem Version=0.8.2 Source=file:/C:/Users/super/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.8.2+build.24/e5a741445d0f425bf3cce946c6cf8c7fb8376b2/sponge-mixin-0.8.2+build.24.jar Service=Knot/Fabric Env=SERVER
+[09:57:30] [main/DEBUG] (mixin) Initialising Mixin Platform Manager
+[09:57:30] [main/DEBUG] (mixin) Adding mixin platform agents for container ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)
+[09:57:30] [main/DEBUG] (mixin) Instancing new MixinPlatformAgentDefault for ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)
+[09:57:30] [main/DEBUG] (mixin) MixinPlatformAgentDefault accepted container ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)
+[09:57:30] [main/DEBUG] (mixin) Instancing new MixinPlatformAgentDefault for ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)
+[09:57:30] [main/DEBUG] (mixin) MixinPlatformAgentDefault accepted container ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)
+[09:57:30] [main/DEBUG] (mixin) Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)]
+[09:57:30] [main/DEBUG] (mixin) Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ContainerHandleURI(file:/C:/Users/super/Documents/IDEA/Resonance/.gradle/loom-cache/remapped_mods/net_fabricmc_yarn_1_16_5_1_16_5_build_1_v2/net/fabricmc/fabric-loader/0.11.1/fabric-loader-0.11.1.jar)]
+[09:57:30] [main/DEBUG] (FabricLoader) Loading mappings took 172 ms
+[09:57:31] [main/INFO] (Fabric|MixinBootstrap) Loaded Fabric development mappings for mixin remapper!
+[09:57:31] [main/DEBUG] (mixin) Error cleaning class output directory: .mixin.out
+[09:57:31] [main/DEBUG] (Fabric|Loader) No subscribers for entrypoint 'preLaunch'
+[09:57:31] [main/DEBUG] (mixin) Preparing mixins for MixinEnvironment[DEFAULT]
+[09:57:38] [main/DEBUG] (Fabric|Loader) Iterating over entrypoint 'main'
+[09:57:38] [main/INFO] (net.minecraft.util.logging.LoggerPrintStream) [STDOUT]: Resonance is starting under: FABRIC
+[09:57:38] [main/INFO] (net.minecraft.util.logging.LoggerPrintStream) [STDOUT]: Loading Config...
+[09:57:38] [main/INFO] (net.minecraft.util.logging.LoggerPrintStream) [STDOUT]: Starting Resonance Server...
+[09:57:38] [main/INFO] (net.minecraft.util.logging.LoggerPrintStream) [STDOUT]: Started Resonance Server!
+[09:57:38] [main/DEBUG] (Fabric|Loader) No subscribers for entrypoint 'server'
+[09:57:41] [main/ERROR] (net.minecraft.server.dedicated.AbstractPropertiesHandler) Failed to load properties from file: server.properties
+[09:57:41] [main/WARN] (net.minecraft.server.dedicated.EulaReader) Failed to load eula.txt
+[09:57:41] [main/INFO] (net.minecraft.server.Main) You need to agree to the EULA in order to run the server. Go to eula.txt for more info.

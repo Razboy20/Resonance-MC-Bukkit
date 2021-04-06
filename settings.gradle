@@ -8,8 +8,6 @@ pluginManagement {
     }
 }
 rootProject.name = 'Resonance'
-include ':api'
+include ':common'
 include ':bukkit'
-include ':fabric'
-
 

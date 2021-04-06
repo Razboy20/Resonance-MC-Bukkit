@@ -30,6 +30,7 @@ configure(subprojects.findAll {it.name != "examples"}) {
     }
     dependencies {
         compileOnly ('io.netty:netty-all:4.1.60.Final')
+        implementation (group: 'org.json', name: 'json', version: '20210307')
     }
 }
 
@@ -39,7 +40,4 @@ repositories {
     mavenCentral()
 }
 
-
-dependencies {
-}
 

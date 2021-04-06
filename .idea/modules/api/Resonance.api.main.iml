@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.system.module.type="sourceSet" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <output url="file://$MODULE_DIR$/../../../common/build/classes/java/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../../common/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../../common/src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="jdk" jdkName="openjdk-15" jdkType="JavaSDK" />
+    <orderEntry type="library" scope="PROVIDED" name="Gradle: io.netty:netty-all:4.1.60.Final" level="project" />
+    <orderEntry type="library" name="Gradle: org.json:json:20210307" level="project" />
+  </component>
+</module>

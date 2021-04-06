@@ -1,2 +1,4 @@
+net/thiccaxe/resonance/bukkit/player/BukkitPlayer.java
+ net.thiccaxe.resonance.bukkit.player.BukkitPlayer
 net/thiccaxe/resonance/bukkit/ResonanceBukkit.java
  net.thiccaxe.resonance.bukkit.ResonanceBukkit

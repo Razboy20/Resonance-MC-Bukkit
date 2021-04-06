@@ -1,0 +1,12 @@
+[09:57:30] [main/INFO] (FabricLoader) Loading for game Minecraft 1.16.5
+[09:57:30] [main/INFO] (Fabric|Loader) [FabricLoader] Loading 4 mods: minecraft@1.16.5, java@15, resonancemc@unspecified, fabricloader@0.11.1
+[09:57:30] [main/WARN] (Fabric|Loader) Mod `resonancemc` (unspecified) does not respect SemVer - comparison support is limited.
+[09:57:30] [main/INFO] (mixin) SpongePowered MIXIN Subsystem Version=0.8.2 Source=file:/C:/Users/super/.gradle/caches/modules-2/files-2.1/net.fabricmc/sponge-mixin/0.8.2+build.24/e5a741445d0f425bf3cce946c6cf8c7fb8376b2/sponge-mixin-0.8.2+build.24.jar Service=Knot/Fabric Env=SERVER
+[09:57:31] [main/INFO] (Fabric|MixinBootstrap) Loaded Fabric development mappings for mixin remapper!
+[09:57:38] [main/INFO] (Minecraft) [STDOUT]: Resonance is starting under: FABRIC
+[09:57:38] [main/INFO] (Minecraft) [STDOUT]: Loading Config...
+[09:57:38] [main/INFO] (Minecraft) [STDOUT]: Starting Resonance Server...
+[09:57:38] [main/INFO] (Minecraft) [STDOUT]: Started Resonance Server!
+[09:57:41] [main/ERROR] (Minecraft) Failed to load properties from file: server.properties
+[09:57:41] [main/WARN] (Minecraft) Failed to load eula.txt
+[09:57:41] [main/INFO] (Minecraft) You need to agree to the EULA in order to run the server. Go to eula.txt for more info.
